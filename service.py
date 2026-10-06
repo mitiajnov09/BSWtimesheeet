@@ -93,6 +93,8 @@ def snapshot(conn,user):
     eids=sorted({a['employee_id'] for a in assignments})
     ep=','.join('?' for _ in eids) or 'NULL'
     employees=rows(conn,'SELECT * FROM employees' if user['role']=='admin' else f'SELECT * FROM employees WHERE id IN ({ep})',() if user['role']=='admin' else eids)
+    photo_ids={r['employee_id'] for r in rows(conn,'SELECT employee_id FROM employee_photos')}
+    for employee in employees:employee['has_photo']=employee['id'] in photo_ids
     managers=rows(conn,f'SELECT pm.*,u.name,u.role FROM project_managers pm JOIN users u ON u.id=pm.user_id WHERE project_id IN ({placeholders})',ids)
     return dict(teams=rows(conn,f'SELECT * FROM teams WHERE project_id IN ({placeholders})',ids),team_members=rows(conn,f'SELECT * FROM team_members WHERE project_id IN ({placeholders})',ids),user=public_user(user),csrf=user['csrf'],projects=projects,employees=employees,assignments=assignments,managers=managers,sites=rows(conn,'SELECT * FROM sites') if user['role']=='admin' else [],users=[public_user(u) for u in rows(conn,'SELECT * FROM users')] if user['role']=='admin' else [],periods=rows(conn,f'SELECT * FROM periods WHERE project_id IN ({placeholders})',ids),events=rows(conn,f'SELECT * FROM events WHERE project_id IN ({placeholders})',ids))
 
@@ -176,6 +178,9 @@ def save_admin(conn,user,entity,data):
         save_admin(conn,user,'assignments',dict(project_id=assignment.get('project_id'),employee_id=id,start=assignment.get('start'),end=assignment.get('end')))
         if assignment.get('team_id') is not None:
             save_team_member(conn,user,dict(project_id=assignment.get('project_id'),employee_id=id,team_id=assignment['team_id'],version=0))
+    if entity=='employees' and 'photo' in data:
+        from photos import save
+        save(conn,user,id,data['photo'])
     safe_old={k:v for k,v in (old or {}).items() if k!='password_hash'}
     safe_new={k:v for k,v in new.items() if k!='password_hash'}
     audit(conn,user,'Изменение' if old else 'Создание',entity,id,safe_old,safe_new,project_id)
@@ -259,7 +264,9 @@ def save_event(conn,user,data):
     if user['role']=='secretary' and (kind not in ('outbound','return') or old and old['kind'] not in ('outbound','return')):
         raise Problem('Секретарь может изменять только перелёты.',403)
     if event_time and not re.fullmatch(r'(?:[01]\d|2[0-3]):[0-5]\d',event_time):raise Problem('Время указывается в формате ЧЧ:ММ.')
-    changes=dict(project_id=pid,employee_id=eid,date=date,time=event_time,timezone=timezone(data.get('timezone')),kind=kind,route=str(data.get('route',''))[:500],flight=str(data.get('flight',''))[:100],notes=str(data.get('notes',''))[:2000])
+    transport=data.get('transport',old['transport'] if old else 'plane')
+    if transport not in ('plane','car','ferry'):raise Problem('Неизвестный вид транспорта.')
+    changes=dict(transport=transport,project_id=pid,employee_id=eid,date=date,time=event_time,timezone=timezone(data.get('timezone')),kind=kind,route=str(data.get('route',''))[:500],flight=str(data.get('flight',''))[:100],notes=str(data.get('notes',''))[:2000])
     id=old['id'] if old else insert(conn,'events',changes)
     new=update(conn,'events',old,changes) if old else get(conn,'events',id)
     audit(conn,user,'Изменение события' if old else 'Создание события','events',id,old,new,pid)

@@ -8,6 +8,8 @@ from urllib.parse import urlparse
 from db import ROOT, connect, migrate, seed, insert, password_hash, audit
 from domain import Problem
 import service
+import feedback
+import photos
 from pdf_export import export
 
 def load_environment():
@@ -34,7 +36,7 @@ class Handler(BaseHTTPRequestHandler):
         if self.headers.get('Content-Type','').split(';')[0]!='application/json':raise Problem('Ожидается JSON.',415)
         try:
             length=int(self.headers.get('Content-Length','0'))
-            if not 0<length<=1000000:raise Problem('Неверный размер запроса.',413)
+            if not 0<length<=(6000000 if urlparse(self.path).path in ('/api/feedback','/api/employees') else 1000000):raise Problem('Неверный размер запроса.',413)
             data=json.loads(self.rfile.read(length))
             if not isinstance(data,dict):raise ValueError()
             return data
@@ -54,7 +56,7 @@ class Handler(BaseHTTPRequestHandler):
                 asset='index.html' if path=='/' else path.lstrip('/')
                 target=(ROOT/'static'/asset).resolve()
                 if not target.is_relative_to(ROOT/'static') or not target.is_file():raise Problem('Страница не найдена.',404)
-                types={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.svg':'image/svg+xml'}
+                types={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.svg':'image/svg+xml','.webp':'image/webp'}
                 return self.respond(200,target.read_bytes(),types.get(target.suffix,'application/octet-stream'))
             conn=connect();data=self.read_json() if method in ('POST','DELETE') else {}
             if method!='GET':
@@ -67,6 +69,15 @@ class Handler(BaseHTTPRequestHandler):
             user=service.authenticate(conn,self.session_token())
             if method!='GET' and not secrets.compare_digest(self.headers.get('X-CSRF-Token',''),user['csrf']):raise Problem('Сессия устарела. Обновите страницу.',403)
             if method=='GET' and path=='/api/data':return self.respond(200,service.snapshot(conn,user))
+            if method=='GET' and path.startswith('/api/employees/') and path.endswith('/photo'):
+                parts=path.split('/')
+                if len(parts)!=5 or not parts[3].isdigit():raise Problem('Маршрут не найден.',404)
+                image,mime=photos.get_photo(conn,user,int(parts[3]));return self.respond(200,image,mime)
+            if method=='GET' and path=='/api/feedback':return self.respond(200,feedback.inbox(conn,user))
+            if method=='GET' and path.startswith('/api/feedback/') and path.endswith('/screenshot'):
+                parts=path.split('/')
+                if len(parts)!=5 or not parts[3].isdigit():raise Problem('Маршрут не найден.',404)
+                image,mime=feedback.screenshot(conn,user,int(parts[3]));return self.respond(200,image,mime)
             if method=='GET' and path=='/api/audit':return self.respond(200,service.history(conn,user))
             if method=='POST' and path=='/api/export':return self.respond(200,export(conn,user,data),'application/pdf',filename='rotation-schedule.pdf')
             if method not in ('POST','DELETE'):raise Problem('Маршрут не найден.',404)
@@ -88,6 +99,8 @@ class Handler(BaseHTTPRequestHandler):
             elif entity=='periods':result=service.save_period(conn,user,data)
             elif entity=='cycle':result=service.cycle(conn,user,data)
             elif entity=='events':result=service.save_event(conn,user,data)
+            elif entity=='feedback':result=feedback.submit(conn,user,data)
+            elif entity=='feedback-status':result=feedback.set_status(conn,user,data)
             else:result=service.save_admin(conn,user,entity,data)
             conn.commit();return self.respond(200,result)
         except Problem as error:

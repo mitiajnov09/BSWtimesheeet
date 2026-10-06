@@ -2,6 +2,8 @@ import io, math, json
 from datetime import timedelta
 from pathlib import Path
 from reportlab.pdfgen import canvas
+from reportlab.lib.utils import ImageReader
+from PIL import Image, ImageOps
 from reportlab.lib.pagesizes import A4, A3, landscape
 from reportlab.lib.colors import HexColor, Color, white
 from reportlab.pdfbase import pdfmetrics
@@ -15,7 +17,8 @@ pdfmetrics.registerFont(TTFont(FONT,str(Path(__file__).parent/'fonts/DejaVuSans.
 COLORS={'work':'#bde8c9','rest':'#e2e6ec','vacation':'#c6dcfa','sick':'#f9c7cb'}
 LABELS={'work':'Работа','rest':'Отдых','vacation':'Отпуск','sick':'Больничный'}
 CODES={'work':'Р','rest':'О','vacation':'У','sick':'Б'}
-EVENT_LABELS={'outbound':'Перелёт на объект','return':'Обратный перелёт','arrival':'Прибытие','departure':'Отъезд','note':'Примечание'}
+EVENT_LABELS={'outbound':'Поездка на объект','return':'Обратная поездка','arrival':'Прибытие','departure':'Отъезд','note':'Примечание'}
+TRANSPORT_LABELS={'plane':'Самолёт','car':'Машина','ferry':'Паром'}
 MONTHS=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь']
 
 def export(conn,user,data):
@@ -28,9 +31,9 @@ def export(conn,user,data):
     months=[tr(value) for value in MONTHS]
     codes=CODES if language=='ru' else (dict(work='D',rest='P',vacation='A',sick='N') if language=='lt' else dict(work='P',rest='O',vacation='U',sick='Z'))
     extra={
-        'ru':{'footer':'Даты включительно · Сб/Вс — календарные выходные · П — перелёт, С — другое событие','page':'Страница','worker':'Работник / специальность','details':'Примечания и события','continued':'Примечания и события — продолжение','week':'Н','flight':'П','event':'С'},
-        'lt':{'footer':'Datos įskaitytinai · Št/Sk — savaitgaliai · S — skrydis, Į — kitas įvykis','page':'Puslapis','worker':'Darbuotojas / specialybė','details':'Pastabos ir įvykiai','continued':'Pastabos ir įvykiai — tęsinys','week':'S','flight':'S','event':'Į'},
-        'pl':{'footer':'Daty włącznie · Sb/Nd — weekendy · L — lot, W — inne wydarzenie','page':'Strona','worker':'Pracownik / specjalność','details':'Notatki i wydarzenia','continued':'Notatki i wydarzenia — ciąg dalszy','week':'T','flight':'L','event':'W'},
+        'ru':{'footer':'Даты включительно · Сб/Вс — календарные выходные · Значки — транспорт, С — другое событие','page':'Страница','worker':'Работник / специальность','details':'Примечания и события','continued':'Примечания и события — продолжение','week':'W','flight':'П','event':'С'},
+        'lt':{'footer':'Datos įskaitytinai · Št/Sk — savaitgaliai · Piktogramos — transportas, Į — kitas įvykis','page':'Puslapis','worker':'Darbuotojas / specialybė','details':'Pastabos ir įvykiai','continued':'Pastabos ir įvykiai — tęsinys','week':'W','flight':'S','event':'Į'},
+        'pl':{'footer':'Daty włącznie · Sb/Nd — weekendy · Ikony — transport, W — inne wydarzenie','page':'Strona','worker':'Pracownik / specjalność','details':'Notatki i wydarzenia','continued':'Notatki i wydarzenia — ciąg dalszy','week':'W','flight':'L','event':'W'},
     }[language]
     project=project_access(conn,user,data.get('project_id'))
     site=dict(conn.execute('SELECT * FROM sites WHERE id=?',(project['site_id'],)).fetchone())
@@ -56,20 +59,25 @@ def export(conn,user,data):
             line+=char
         if line:lines.append(line)
         return lines or ['']
+    include_photos=data.get('include_photos',False)
+    if not isinstance(include_photos,bool):raise Problem('Выберите экспорт с фотографиями или без.')
+    photo_space=38 if include_photos else 0
+    portraits={r['employee_id']:r['content'] for r in rows(conn,'SELECT employee_id,content FROM employee_photos WHERE employee_id IN ('+','.join('?' for _ in employees)+')',[e['id'] for e in employees])} if include_photos else {}
     title_lines=wrapped(project['name'],width-56,17)
     title_extra=(len(title_lines)-1)*22
     for employee in employees:
-        employee['_name_lines']=wrapped(employee['last_name']+' '+employee['first_name'],151,9)
-        employee['_specialty_lines']=wrapped(employee['specialty'],151,8)
-        employee['_layers']=max((p.get('layer',0)+1 for p in periods if p['employee_id']==employee['id']),default=1)
-        employee['_row_height']=max(16+employee['_layers']*24,len(employee['_name_lines'])*12+len(employee['_specialty_lines'])*10+12)
+        employee['_photo']=portraits.get(employee['id'])
+        employee['_name_lines']=wrapped(employee['last_name']+' '+employee['first_name'],151-photo_space,9)
+        employee['_specialty_lines']=wrapped(employee['specialty'],151-photo_space,8)
+        employee['_layers']=max([1]+[p.get('layer',0)+1 for p in periods if p['employee_id']==employee['id']]+[sum(v['employee_id']==employee['id'] and v['date']==ev['date'] and v['kind'] in ('outbound','return') for v in events) for ev in events if ev['employee_id']==employee['id'] and ev['kind'] in ('outbound','return')])
+        employee['_row_height']=max(48 if include_photos else 0,16+employee['_layers']*24,len(employee['_name_lines'])*12+len(employee['_specialty_lines'])*10+12)
     display_employees=[]
     max_layers=max(1,int((height-231-title_extra)//24))
     for employee in employees:
         for first in range(0,employee['_layers'],max_layers):
             last=min(employee['_layers'],first+max_layers)
             item={**employee,'_layer_start':first,'_layer_end':last}
-            item['_row_height']=max(16+(last-first)*24,len(item['_name_lines'])*12+len(item['_specialty_lines'])*10+12)
+            item['_row_height']=max(48 if include_photos else 0,16+(last-first)*24,len(item['_name_lines'])*12+len(item['_specialty_lines'])*10+12)
             display_employees.append(item)
     worker_groups=[];group=[];used=0
     for employee in display_employees:
@@ -106,6 +114,24 @@ def export(conn,user,data):
             c.setFillColor(HexColor(COLORS[kind]));c.rect(x,y-3,13,12,fill=1,stroke=0)
             text(x+18,y,codes[kind]+' — '+label,8);x+=max(95,pdfmetrics.stringWidth(codes[kind]+' — '+label,FONT,8)+34)
         text(x,y,'* '+tr('Ручная правка'),8)
+    def transport_icon(x,y,transport):
+        # Draw vector symbols so all transports remain legible in the embedded-font PDF.
+        c.saveState();c.translate(x,y);c.scale(min(14,cell-2)/24,min(14,cell-2)/24)
+        c.setStrokeColor(HexColor('#346a96'));c.setLineWidth(1.6)
+        def line(points,close=False):
+            p=c.beginPath();p.moveTo(*points[0])
+            for point in points[1:]:p.lineTo(*point)
+            if close:p.close()
+            c.drawPath(p,stroke=1,fill=0)
+        if transport=='car':
+            line([(3,5),(21,5),(21,14),(19,14),(17,20),(7,20),(5,14),(3,14)],True)
+            c.line(5,14,19,14);c.line(6,10,8,10);c.line(16,10,18,10);c.line(6,5,6,2);c.line(18,5,18,2)
+        elif transport=='ferry':
+            line([(2,9),(12,13),(22,9),(18,4),(6,4)],True)
+            line([(5,10),(5,18),(19,18),(19,10)]);line([(9,18),(9,21),(15,21),(15,18)])
+            line([(2,1),(6,3),(10,1),(14,3),(18,1),(22,3)])
+        else:line([(12,22),(14,19),(14,14),(22,9),(22,7),(14,9),(14,5),(17,3),(17,2),(12,3),(7,2),(7,3),(10,5),(10,9),(2,7),(2,9),(10,14),(10,19)],True)
+        c.restoreState()
     for dates,group in chunks:
         title(dates[0].strftime('%d.%m.%Y')+' — '+dates[-1].strftime('%d.%m.%Y'))
         y=height-82-title_extra;grid_x=margin+name_width
@@ -129,23 +155,43 @@ def export(conn,user,data):
         for i,e in enumerate(group):
             row_height=e['_row_height'];row_y-=row_height
             c.setFillColor(white if i%2==0 else HexColor('#f7f9fb'));c.rect(margin,row_y,width-2*margin,row_height,fill=1,stroke=0)
+            if include_photos:
+                photo_x=margin+7;photo_y=row_y+row_height-40
+                if e['_photo']:
+                    with Image.open(io.BytesIO(e['_photo'])) as portrait:
+                        upright=ImageOps.exif_transpose(portrait)
+                        c.saveState()
+                        clip=c.beginPath();clip.circle(photo_x+15,photo_y+16,15);c.clipPath(clip,stroke=0,fill=0)
+                        scale=max(30/upright.width,30/upright.height);w,h=upright.width*scale,upright.height*scale
+                        c.drawImage(ImageReader(upright),photo_x+15-w/2,photo_y+16-h/2,width=w,height=h,mask='auto')
+                        c.restoreState()
+                else:
+                    c.setFillColor(HexColor('#edf0f4'));c.circle(photo_x+15,photo_y+16,15,stroke=0,fill=1)
+                    text(photo_x+5,photo_y+12,e['first_name'][0]+e['last_name'][0],8,'#7d8796')
             name_y=row_y+row_height-14
             for line in e['_name_lines']:
-                text(margin+8,name_y,line,9);name_y-=12
+                text(margin+8+photo_space,name_y,line,9);name_y-=12
             for line in e['_specialty_lines']:
-                text(margin+8,name_y,line,8,'#58697d');name_y-=10
+                text(margin+8+photo_space,name_y,line,8,'#58697d');name_y-=10
             for j,d in enumerate(dates):
                 x=grid_x+j*cell
                 if d.weekday()>=5:
                     c.setFillColor(HexColor('#edf0f4'));c.rect(x,row_y,cell,row_height,fill=1,stroke=0)
                 matching=[p for p in periods if p['employee_id']==e['id'] and e['_layer_start']<=p.get('layer',0)<e['_layer_end'] and p['start']<=d.isoformat()<=p['end']]
+                ev=[ev for ev in events if ev['employee_id']==e['id'] and ev['date']==d.isoformat()]
+                trips=[ev for ev in ev if ev['kind'] in ('outbound','return')]
+                if trips:matching=[]
                 for p in matching:
                     lane_y=row_y+9+(e['_layer_end']-1-p.get('layer',0))*24
                     c.setFillColor(HexColor(COLORS[p['kind']]));c.rect(x,lane_y,cell,22,fill=1,stroke=0)
                     text(x+cell/2-3,lane_y+7,codes[p['kind']],7)
                     if p['manual'] and (j==0 or d.isoformat()==p['start']):text(x+1,lane_y+18,'*',7)
-                ev=[ev for ev in events if ev['employee_id']==e['id'] and ev['date']==d.isoformat()]
-                if ev:text(x+cell/2-3,row_y+2,extra['flight'] if any(v['kind'] in ('outbound','return') for v in ev) else extra['event'],6)
+                for lane,trip in enumerate(trips):
+                    if not e['_layer_start']<=lane<e['_layer_end']:continue
+                    lane_y=row_y+9+(e['_layer_end']-1-lane)*24
+                    c.setFillColor(HexColor('#d7eafa'));c.rect(x,lane_y,cell,22,fill=1,stroke=0)
+                    transport_icon(x+(cell-min(14,cell-2))/2,lane_y+4,trip.get('transport','plane'))
+                if any(v['kind'] not in ('outbound','return') for v in ev):text(x+cell/2-3,row_y+2,extra['event'],6)
                 c.setStrokeColor(HexColor('#d5dce5'));c.setLineWidth(.3);c.line(x,row_y,x,row_y+row_height)
             c.setStrokeColor(HexColor('#d5dce5'));c.line(margin,row_y,width-margin,row_y)
         legend(max(46,row_y-22));footer();c.showPage()
@@ -161,7 +207,7 @@ def export(conn,user,data):
     for ev in events:
         if ev['employee_id'] not in allowed:continue
         e=allowed[ev['employee_id']]
-        details.append(e['last_name']+' '+e['first_name']+' · '+ev['date']+(' '+ev['time'] if ev['time'] else '')+' ('+ev['timezone']+') · '+event_labels[ev['kind']]+' · '+ev['route']+' '+ev['flight']+(' · '+ev['notes'] if data.get('include_notes',True) and ev['notes'] else ''))
+        details.append(e['last_name']+' '+e['first_name']+' · '+ev['date']+(' '+ev['time'] if ev['time'] else '')+' ('+ev['timezone']+') · '+event_labels[ev['kind']]+(' · '+tr(TRANSPORT_LABELS[ev.get('transport','plane')]) if ev['kind'] in ('outbound','return') else '')+' · '+ev['route']+' '+ev['flight']+(' · '+ev['notes'] if data.get('include_notes',True) and ev['notes'] else ''))
     if details:
         title(extra['details']+' · '+start.isoformat()+' — '+end.isoformat());y=height-83-title_extra
         for detail in details:

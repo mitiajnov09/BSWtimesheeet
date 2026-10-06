@@ -32,3 +32,26 @@ assert.equal(vm.runInContext("employeeNameMatches({first_name:'Ąžuolas',last_n
 vm.runInContext('openTeam(2)',context);assert.match(node('#modal-root').innerHTML,/data-act="delete-current-team">Удалить команду/);
 vm.runInContext("view='schedule';render()",context);assert.match(node('#calendar').innerHTML,/class="icon team-delete-button"/);
 console.log('Worker name search and visible team deletion checks passed');
+
+fixture.events=[{id:101,project_id:1,employee_id:1,date:'2026-10-02',kind:'outbound',transport:'car',time:'',timezone:'Europe/Vilnius',route:'',flight:''}];
+vm.runInContext('render()',context);
+assert.match(node('#calendar').innerHTML,/class="rotation travel-day"/);assert.doesNotMatch(node('#calendar').innerHTML,/class="event-pin"/);
+assert.match(node('#calendar').innerHTML,/width:24px;top:3px/);
+assert.equal(vm.runInContext("dailyOnSiteCount('2026-10-02')",context),0);
+assert.deepEqual(JSON.parse(vm.runInContext("JSON.stringify(periodFragments({start:'2026-10-01',end:'2026-10-03'},fixture.events))",context)),[{start:'2026-10-01',end:'2026-10-01'},{start:'2026-10-03',end:'2026-10-03'}]);
+vm.runInContext('openEvent(1,fixture.events[0])',context);assert.match(node('#modal-root').innerHTML,/<option value="car" selected>Машина/);
+console.log('Travel day occupies a full cell, splits displayed work, excludes onsite count and selects transport');
+
+fixture.user.role='manager';vm.runInContext("view='schedule';render()",context);assert.doesNotMatch(node('#app').innerHTML,/data-act="nav" data-id="feedback"/);assert.match(node('#app').innerHTML,/data-act="send-feedback"/);
+fixture.user.role='secretary';vm.runInContext('render()',context);assert.doesNotMatch(node('#app').innerHTML,/data-act="nav" data-id="feedback"/);
+fixture.user.role='admin';vm.runInContext('render()',context);assert.match(node('#app').innerHTML,/data-act="nav" data-id="feedback"/);
+vm.runInContext('openFeedback()',context);assert.match(node('#modal-root').innerHTML,/textarea name="message" required maxlength="5000"/);assert.match(node('#modal-root').innerHTML,/accept="image\/png,image\/jpeg,image\/webp"/);
+vm.runInContext("feedbackRecords=[{id:1,kind:'bug',message:'<script>alert(1)</script>',status:'new',user_name:'User',username:'user',created_at:'2026-10-06 10:00:00',has_screenshot:1}];drawFeedback()",context);assert.doesNotMatch(node('#feedback-body').innerHTML,/<script>/);assert.match(node('#feedback-body').innerHTML,/&lt;script&gt;/);
+vm.runInContext('openFeedbackDetail(1)',context);assert.match(node('#modal-root').innerHTML,/src="\/api\/feedback\/1\/screenshot"/);assert.match(node('#modal-root').innerHTML,/Отметить просмотренным/);
+console.log('Feedback submission button, admin-only navigation, screenshot form and escaped message checks passed');
+
+fixture.user.role='admin';fixture.employees[0].has_photo=true;vm.runInContext("view='schedule';render()",context);assert.match(node('#calendar').innerHTML,/class="employee-photo"/);assert.match(node('#calendar').innerHTML,/\/api\/employees\/1\/photo/);
+vm.runInContext('openEmployee(1)',context);assert.match(node('#modal-root').innerHTML,/id="employee-photo-file"/);assert.match(node('#modal-root').innerHTML,/Убрать фотографию/);
+vm.runInContext('openExport()',context);assert.match(node('#modal-root').innerHTML,/name="include_photos"/);assert.match(node('#modal-root').innerHTML,/Включить фотографии работников/);
+fixture.user.role='manager';vm.runInContext('openEmployee(1)',context);assert.match(node('#modal-root').innerHTML,/employee-photo/);assert.doesNotMatch(node('#modal-root').innerHTML,/type="file"/);
+console.log('Employee photo avatar, admin upload controls and optional PDF photo checkbox checks passed');

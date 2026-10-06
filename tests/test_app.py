@@ -155,8 +155,106 @@ class DatabaseTests(unittest.TestCase):
         reader=PdfReader(io.BytesIO(pdf));self.assertGreater(len(reader.pages),1)
         text=''.join(p.extract_text().replace('\n','') for p in reader.pages)
         self.assertIn(long_last,text);self.assertIn('Работник 36',text)
+    def test_travel_transport_defaults_updates_and_preserves_schedule(self):
+        event=service.get(self.conn,'events',1)
+        self.assertEqual(event['transport'],'plane')
+        before=service.employee_periods(self.conn,1)
+        car=service.save_event(self.conn,self.manager,{**event,'transport':'car'})
+        self.assertEqual(service.get(self.conn,'events',1)['transport'],'car')
+        with self.assertRaises(Problem) as ctx:service.save_event(self.conn,self.manager,{**event,'transport':'ferry'})
+        self.assertEqual(ctx.exception.status,409)
+        ferry=service.save_event(self.conn,self.manager,{**car,'transport':'ferry'})
+        with self.assertRaises(Problem):service.save_event(self.conn,self.manager,{**ferry,'transport':'train'})
+        self.assertEqual(before,service.employee_periods(self.conn,1))
+        service.remove(self.conn,self.manager,'events',{'id':ferry['id'],'version':ferry['version']})
+        self.assertEqual(before,service.employee_periods(self.conn,1))
+    def test_travel_transport_pdf_and_project_access(self):
+        event=service.get(self.conn,'events',1)
+        service.save_event(self.conn,self.manager,{**event,'transport':'ferry'})
+        pdf=export(self.conn,self.manager,dict(project_id=1,start='2026-10-01',end='2026-10-31',employee_ids=[1],language='lt'))
+        text=''.join(p.extract_text() for p in PdfReader(io.BytesIO(pdf)).pages)
+        self.assertIn('Keltas',text)
+        other=service.get(self.conn,'users',3)
+        with self.assertRaises(Problem) as ctx:service.save_event(self.conn,other,{**event,'transport':'car'})
+        self.assertEqual(ctx.exception.status,403)
     def test_migrations_are_idempotent(self):
-        migrate(self.conn);migrate(self.conn);self.assertEqual(self.conn.execute('SELECT count(*) FROM schema_migrations').fetchone()[0],4)
+        migrate(self.conn);migrate(self.conn);self.assertEqual(self.conn.execute('SELECT count(*) FROM schema_migrations').fetchone()[0],7)
+
+class EmployeePhotoTests(unittest.TestCase):
+    setUp=DatabaseTests.setUp
+    tearDown=DatabaseTests.tearDown
+    image=lambda self: FeedbackTests.image(self)
+    def test_photo_upload_replacement_removal_and_private_snapshot(self):
+        import photos
+        image,raw=self.image();old=service.get(self.conn,'employees',1)
+        updated=service.save_admin(self.conn,self.admin,'employees',{**old,'photo':image})
+        self.assertEqual(photos.get_photo(self.conn,self.manager,1),(raw,'image/png'))
+        self.manager['csrf']='test';snapshot=service.snapshot(self.conn,self.manager)
+        employee=next(e for e in snapshot['employees'] if e['id']==1)
+        self.assertTrue(employee['has_photo']);self.assertNotIn('photo',employee)
+        with self.assertRaises(Problem) as ctx:photos.get_photo(self.conn,service.get(self.conn,'users',3),1)
+        self.assertEqual(ctx.exception.status,403)
+        with self.assertRaises(Problem):service.save_admin(self.conn,self.manager,'employees',{**updated,'photo':None})
+        with self.assertRaises(Problem) as ctx:service.save_admin(self.conn,self.admin,'employees',{**old,'photo':None})
+        self.assertEqual(ctx.exception.status,409)
+        service.save_admin(self.conn,self.admin,'employees',{**updated,'photo':None})
+        with self.assertRaises(Problem) as ctx:photos.get_photo(self.conn,self.manager,1)
+        self.assertEqual(ctx.exception.status,404)
+    def test_pdf_photo_option_includes_and_excludes_images(self):
+        image,_=self.image();old=service.get(self.conn,'employees',1);service.save_admin(self.conn,self.admin,'employees',{**old,'photo':image})
+        for enabled in [True,False]:
+            pdf=export(self.conn,self.manager,dict(project_id=1,start='2026-10-01',end='2026-10-14',employee_ids=[1,2],include_photos=enabled,include_notes=False))
+            reader=PdfReader(io.BytesIO(pdf));count=sum(len(page.images) for page in reader.pages)
+            self.assertEqual(count,1 if enabled else 0)
+            self.assertIn('Kazlauskas Jonas',''.join(page.extract_text().replace('\n',' ') for page in reader.pages))
+    def test_invalid_photo_rejected(self):
+        import photos
+        for value in ['data:image/svg+xml;base64,PHN2Zy8+','data:image/png;base64,ZmFrZQ==',{},'x'*(4*1024*1024*4//3+201)]:
+            with self.assertRaises(Problem):photos.decode(value)
+
+class FeedbackTests(unittest.TestCase):
+    setUp=DatabaseTests.setUp
+    tearDown=DatabaseTests.tearDown
+    def image(self):
+        import base64
+        from PIL import Image
+        buffer=io.BytesIO();Image.new('RGB',(12,12),'red').save(buffer,format='PNG')
+        return 'data:image/png;base64,'+base64.b64encode(buffer.getvalue()).decode(),buffer.getvalue()
+    def test_submit_is_private_and_author_is_session_user(self):
+        import feedback
+        image,raw=self.image()
+        result=feedback.submit(self.conn,self.manager,dict(kind='bug',message='Ошибка графика',screenshot=image,project_id=1,user_id=1))
+        self.conn.commit()
+        records=feedback.inbox(self.conn,self.admin)
+        self.assertEqual(records[0]['user_id'],self.manager['id']);self.assertEqual(records[0]['has_screenshot'],1)
+        self.assertNotIn('screenshot',records[0])
+        self.assertEqual(feedback.screenshot(self.conn,self.admin,result['id']),(raw,'image/png'))
+        for user in [self.manager,{**self.manager,'role':'secretary'}]:
+            with self.assertRaises(Problem) as ctx:feedback.inbox(self.conn,user)
+            self.assertEqual(ctx.exception.status,403)
+            with self.assertRaises(Problem) as ctx:feedback.screenshot(self.conn,user,result['id'])
+            self.assertEqual(ctx.exception.status,403)
+    def test_status_changes_admin_only_with_versions(self):
+        import feedback
+        result=feedback.submit(self.conn,{**self.manager,'role':'secretary'},dict(kind='idea',message='Улучшение'))
+        payload=dict(id=result['id'],version=1,status='reviewed')
+        with self.assertRaises(Problem):feedback.set_status(self.conn,self.manager,payload)
+        feedback.set_status(self.conn,self.admin,payload)
+        self.assertEqual(feedback.inbox(self.conn,self.admin)[0]['status'],'reviewed')
+        with self.assertRaises(Problem) as ctx:feedback.set_status(self.conn,self.admin,payload)
+        self.assertEqual(ctx.exception.status,409)
+    def test_invalid_feedback_rejected_without_insert(self):
+        import feedback
+        image,_=self.image()
+        for fields in [dict(message=''),dict(message='a'*5001),dict(message='ok',kind='unknown'),dict(message='ok',screenshot='data:image/svg+xml;base64,PHN2Zy8+'),dict(message='ok',screenshot='data:image/png;base64,ZmFrZQ=='),dict(message='ok',screenshot=image.replace('image/png','image/jpeg')),dict(message='ok',screenshot='x'*(feedback.MAX_IMAGE*4//3+201))]:
+            with self.assertRaises(Problem):feedback.submit(self.conn,self.manager,fields)
+        self.assertEqual(self.conn.execute('SELECT count(*) FROM feedback').fetchone()[0],0)
+        with self.assertRaises(Problem):feedback.submit(self.conn,self.manager,dict(message='ok',project_id=2))
+    def test_feedback_screenshots_survive_sqlite_backup(self):
+        import feedback,sqlite3
+        image,raw=self.image();result=feedback.submit(self.conn,self.admin,dict(kind='idea',message='Хранить отзыв',screenshot=image));self.conn.commit()
+        target=sqlite3.connect(':memory:');self.conn.backup(target)
+        self.assertEqual(target.execute('SELECT screenshot FROM feedback WHERE id=?',(result['id'],)).fetchone()[0],raw);target.close()
 
 class SecretaryAndTeamTests(unittest.TestCase):
     setUp=DatabaseTests.setUp
@@ -290,6 +388,43 @@ class HTTPTests(unittest.TestCase):
         cookie,csrf=self.login();_,data,_=self.request('data',cookie=cookie)
         self.assertEqual(next(v for v in data['periods'] if v['id']==p['id'])['notes'],payload['notes'])
         self.assertTrue(self.request('export',dict(project_id=1,start='2026-10-01',end='2026-10-31'),cookie,csrf)[1].startswith(b'%PDF'))
+    def test_feedback_submission_and_admin_only_http_routes(self):
+        cookie,csrf=self.login('manager');admin_cookie,admin_csrf=self.login('admin')
+        _,raw=FeedbackTests.image(self)
+        import base64
+        image='data:image/png;base64,'+base64.b64encode(raw).decode()
+        self.assertEqual(self.request('feedback',dict(message='CSRF'),cookie=cookie)[0],403)
+        status,record,_=self.request('feedback',dict(kind='bug',message='Тест скриншота',screenshot=image),cookie,csrf)
+        self.assertEqual(status,200)
+        self.assertEqual(self.request('feedback',cookie=cookie)[0],403)
+        self.assertEqual(self.request('feedback/'+str(record['id'])+'/screenshot',cookie=cookie)[0],403)
+        self.assertEqual(self.request('feedback/'+str(record['id'])+'/screenshot',cookie=admin_cookie)[1],raw)
+        status,records,_=self.request('feedback',cookie=admin_cookie);self.assertEqual(status,200)
+        self.assertTrue(any(r['id']==record['id'] and r['has_screenshot'] for r in records))
+        self.assertEqual(self.request('feedback-status',dict(id=record['id'],version=1,status='reviewed'),cookie,csrf)[0],403)
+        self.assertEqual(self.request('feedback-status',dict(id=record['id'],version=1,status='reviewed'),admin_cookie,admin_csrf)[0],200)
+    def test_feedback_accepts_screenshot_larger_than_one_megabyte(self):
+        from PIL import Image
+        import base64
+        buffer=io.BytesIO();Image.frombytes('RGB',(800,500),os.urandom(800*500*3)).save(buffer,format='PNG')
+        raw=buffer.getvalue();self.assertGreater(len(raw),1000000)
+        cookie,csrf=self.login('manager')
+        status,record,_=self.request('feedback',dict(kind='idea',message='Большой скриншот',screenshot='data:image/png;base64,'+base64.b64encode(raw).decode()),cookie,csrf)
+        self.assertEqual(status,200)
+        admin_cookie,_=self.login('admin');self.assertEqual(self.request('feedback/'+str(record['id'])+'/screenshot',cookie=admin_cookie)[1],raw)
+    def test_employee_photo_http_and_atomic_invalid_creation(self):
+        admin_cookie,admin_csrf=self.login('admin');manager_cookie,manager_csrf=self.login('manager')
+        self.assertEqual(self.request('users',dict(username='photo-reviewer',name='Photo reviewer',role='manager',password='photo-reviewer-password',active=True),admin_cookie,admin_csrf)[0],200)
+        status,_,login_cookie=self.request('login',dict(username='photo-reviewer',password='photo-reviewer-password'));self.assertEqual(status,200);other_cookie=login_cookie.split(';')[0]
+        image,raw=FeedbackTests.image(self)
+        _,data,_=self.request('data',cookie=admin_cookie);old=data['employees'][0]
+        self.assertEqual(self.request('employees',{**old,'photo':image},admin_cookie,admin_csrf)[0],200)
+        self.assertEqual(self.request('employees/'+str(old['id'])+'/photo',cookie=manager_cookie)[1],raw)
+        self.assertEqual(self.request('employees/'+str(old['id'])+'/photo',cookie=other_cookie)[0],403)
+        self.assertEqual(self.request('employees',{**old,'photo':None},manager_cookie,manager_csrf)[0],403)
+        count=len(data['employees'])
+        self.assertEqual(self.request('employees',dict(first_name='Тест',last_name='Фото',specialty='Монтажник',photo='invalid'),admin_cookie,admin_csrf)[0],400)
+        _,data,_=self.request('data',cookie=admin_cookie);self.assertEqual(len(data['employees']),count)
     def test_two_simultaneous_editors(self):
         admin_cookie,admin_csrf=self.login('admin');manager_cookie,manager_csrf=self.login('manager')
         _,snapshot,_=self.request('data',cookie=manager_cookie)

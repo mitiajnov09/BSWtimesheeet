@@ -1,0 +1,18 @@
+# Local Docker preview; separate volume from the HTTPS deployment.
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    environment:
+      APP_HOST: 0.0.0.0
+      APP_PORT: 8080
+      APP_DB: /app/data/rotations.sqlite3
+      APP_ORIGIN: http://127.0.0.1:8080
+      APP_SECURE_COOKIE: "0"
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - rotations_local_data:/app/data
+      - ./backups:/backups
+volumes:
+  rotations_local_data:

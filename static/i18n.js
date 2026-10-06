@@ -4,6 +4,60 @@ const LANGUAGE_OPTIONS=[['ru','Русский'],['lt','Lietuvių'],['pl','Polski
 let language=localStorage.getItem('rotations-language')||'ru';
 if(!LANGUAGE_OPTIONS.some(([code])=>code===language))language='ru';
 const UI_TRANSLATIONS={
+  "Фотография работника": ["Darbuotojo nuotrauka", "Zdjęcie pracownika"],
+  "Убрать фотографию": ["Pašalinti nuotrauką", "Usuń zdjęcie"],
+  "Включить фотографии работников": ["Įtraukti darbuotojų nuotraukas", "Dołącz zdjęcia pracowników"],
+  "Прикрепите корректную фотографию PNG, JPEG или WebP.": ["Pridėkite tinkamą PNG, JPEG arba WebP nuotrauką.", "Dołącz poprawne zdjęcie PNG, JPEG lub WebP."],
+  "Фотография не должна превышать 4 МБ.": ["Nuotrauka neturi viršyti 4 MB.", "Zdjęcie nie może przekraczać 4 MB."],
+  "Не удалось прочитать фотографию.": ["Nepavyko perskaityti nuotraukos.", "Nie udało się odczytać zdjęcia."],
+  "Фотография не найдена.": ["Nuotrauka nerasta.", "Nie znaleziono zdjęcia."],
+  "Нет доступа к работнику.": ["Nėra prieigos prie darbuotojo.", "Brak dostępu do pracownika."],
+  "Выберите экспорт с фотографиями или без.": ["Pasirinkite eksportą su nuotraukomis arba be jų.", "Wybierz eksport ze zdjęciami lub bez."],
+"Отзывы":["Atsiliepimai", "Opinie"],
+"Сообщить об ошибке или предложить улучшение":["Pranešti apie klaidą arba pasiūlyti patobulinimą", "Zgłoś błąd lub zaproponuj ulepszenie"],
+"Обратная связь":["Atsiliepimas", "Opinia"],
+"Нашли ошибку или есть идея для улучшения?":["Radote klaidą ar turite idėją, kaip patobulinti?", "Znalazłeś błąd lub masz pomysł na ulepszenie?"],
+"Тип сообщения":["Pranešimo tipas", "Typ wiadomości"],
+"Ошибка":["Klaida", "Błąd"],
+"Предложение":["Pasiūlymas", "Sugestia"],
+"Ваше сообщение":["Jūsų pranešimas", "Twoja wiadomość"],
+"Опишите проблему или предложение…":["Aprašykite problemą arba pasiūlymą…", "Opisz problem lub sugestię…"],
+"Скриншот (необязательно)":["Ekrano kopija (nebūtina)", "Zrzut ekranu (opcjonalnie)"],
+"Скриншот":["Ekrano kopija", "Zrzut ekranu"],
+"PNG, JPEG или WebP · до 4 МБ":["PNG, JPEG arba WebP · iki 4 MB", "PNG, JPEG lub WebP · do 4 MB"],
+"Сообщение увидит только администратор.":["Pranešimą matys tik administratorius.", "Wiadomość zobaczy tylko administrator."],
+"Отправить":["Siųsti", "Wyślij"],
+"Спасибо! Отзыв отправлен администратору.":["Ačiū! Atsiliepimas išsiųstas administratoriui.", "Dziękujemy! Opinia została wysłana administratorowi."],
+"Убрать скриншот":["Pašalinti ekrano kopiją", "Usuń zrzut ekranu"],
+"Ошибки и предложения пользователей · только для администратора":["Naudotojų klaidos ir pasiūlymai · tik administratoriui", "Błędy i sugestie użytkowników · tylko dla administratora"],
+"Статус отзыва":["Atsiliepimo būsena", "Status opinii"],
+"Все отзывы":["Visi atsiliepimai", "Wszystkie opinie"],
+"Новые":["Nauji", "Nowe"],
+"Просмотренные":["Peržiūrėti", "Przejrzane"],
+"Новый":["Naujas", "Nowy"],
+"Просмотрен":["Peržiūrėtas", "Przejrzany"],
+"Отзывов пока нет.":["Atsiliepimų dar nėra.", "Nie ma jeszcze opinii."],
+"Отметить просмотренным":["Pažymėti kaip peržiūrėtą", "Oznacz jako przejrzane"],
+"Вернуть в новые":["Grąžinti į naujus", "Przywróć do nowych"],
+"Прикрепите корректный скриншот PNG, JPEG или WebP.":["Pridėkite tinkamą PNG, JPEG arba WebP ekrano kopiją.", "Dołącz poprawny zrzut ekranu PNG, JPEG lub WebP."],
+"Скриншот не должен превышать 4 МБ.":["Ekrano kopija neturi viršyti 4 MB.", "Zrzut ekranu nie może przekraczać 4 MB."],
+"Не удалось прочитать скриншот.":["Nepavyko perskaityti ekrano kopijos.", "Nie udało się odczytać zrzutu ekranu."],
+"Введите сообщение от 1 до 5000 символов.":["Įveskite pranešimą nuo 1 iki 5000 simbolių.", "Wpisz wiadomość od 1 do 5000 znaków."],
+"Выберите ошибку или предложение.":["Pasirinkite klaidą arba pasiūlymą.", "Wybierz błąd lub sugestię."],
+"Неизвестный статус отзыва.":["Nežinoma atsiliepimo būsena.", "Nieznany status opinii."],
+"Скриншот не найден.":["Ekrano kopija nerasta.", "Nie znaleziono zrzutu ekranu."],
+"Некорректный скриншот.":["Netinkama ekrano kopija.", "Nieprawidłowy zrzut ekranu."],
+  "Изменить начало": ["Keisti pradžią", "Zmień początek"],
+  "Изменить окончание": ["Keisti pabaigą", "Zmień koniec"],
+  "Поездка на объект": ["Kelionė į objektą", "Podróż na obiekt"],
+  "Обратная поездка": ["Kelionė atgal", "Podróż powrotna"],
+  "Поездка": ["Kelionė", "Podróż"],
+  "Добавить поездку или событие": ["Pridėti kelionę arba įvykį", "Dodaj podróż lub wydarzenie"],
+  "Самолёт": ["Lėktuvas", "Samolot"],
+  "Машина": ["Automobilis", "Samochód"],
+  "Паром": ["Keltas", "Prom"],
+  "Транспорт": ["Transportas", "Transport"],
+  "Неизвестный вид транспорта.": ["Nežinoma transporto rūšis.", "Nieznany rodzaj transportu."],
   "Ротации": [
     "Rotacijos",
     "Rotacje"
@@ -1573,10 +1627,10 @@ function translateText(value){
 function languageSelect(){return `<select class="language-select" data-language aria-label="Language">${LANGUAGE_OPTIONS.map(([code,label])=>`<option value="${code}" ${code===language?'selected':''}>${label}</option>`).join('')}</select>`}
 function translateUI(root=document.body){
  const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);let node;
- while((node=walker.nextNode())){if(['SCRIPT','STYLE','TEXTAREA'].includes(node.parentElement?.tagName))continue;let next=translateText(node.nodeValue);if(next!==node.nodeValue)node.nodeValue=next}
+ while((node=walker.nextNode())){if(['SCRIPT','STYLE','TEXTAREA'].includes(node.parentElement?.tagName)||node.parentElement?.closest?.('.feedback-text'))continue;let next=translateText(node.nodeValue);if(next!==node.nodeValue)node.nodeValue=next}
  for(const el of root.querySelectorAll('[title],[placeholder],[aria-label]'))for(const attr of ['title','placeholder','aria-label'])if(el.hasAttribute(attr)){let v=el.getAttribute(attr),next=translateText(v);if(v!==next)el.setAttribute(attr,next)}
  document.documentElement.lang=language;
- document.title=translateText('Ротации — планирование команды');
+ document.title='BSW ROTACIJA · BETA testing';
 }
 document.addEventListener('change',event=>{if(!event.target.matches('[data-language]'))return;language=event.target.value;localStorage.setItem('rotations-language',language);closeModal();render();translateUI()});
 new MutationObserver(()=>translateUI()).observe(document.body,{childList:true,subtree:true,characterData:true});

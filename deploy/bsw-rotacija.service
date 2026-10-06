@@ -1,0 +1,23 @@
+[Unit]
+Description=BSW ROTACIJA web application
+After=network.target
+
+[Service]
+Type=simple
+User=bsw
+Group=bsw
+WorkingDirectory=/opt/bsw-rotacija
+Environment=PYTHONUNBUFFERED=1
+EnvironmentFile=/opt/bsw-rotacija/.env
+ExecStart=/opt/bsw-rotacija/.venv/bin/python /opt/bsw-rotacija/app.py
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/bsw-rotacija/data /opt/bsw-rotacija/backups
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target
