@@ -39,6 +39,54 @@ class DatabaseTests(unittest.TestCase):
         self.tmp=tempfile.TemporaryDirectory();self.conn=connect(str(Path(self.tmp.name)/'db.sqlite'));migrate(self.conn);self.passwords=seed(self.conn)
         self.admin=dict(self.conn.execute('SELECT * FROM users WHERE id=1').fetchone());self.manager=dict(self.conn.execute('SELECT * FROM users WHERE id=2').fetchone())
     def tearDown(self):self.conn.close();self.tmp.cleanup()
+    def test_schedule_batch_cycles_and_atomic_failure(self):
+        ids=[row['employee_id'] for row in self.conn.execute('SELECT employee_id FROM assignments WHERE project_id=1 AND active=1 LIMIT 2')]
+        self.assertEqual(len(ids),2)
+        items=[dict(employee_id=id,project_id=1,start='2026-10-01',end='2026-10-20',schedule_version=service.get(self.conn,'employees',id)['schedule_version'],preview=True) for id in ids]
+        previews=service.save_schedule_batch(self.conn,self.manager,dict(entity='cycle',items=items))['results']
+        self.assertEqual(len(previews),2)
+        writes=[{**item,'preview':False,'token':preview['token']} for item,preview in zip(items,previews)]
+        self.conn.execute('BEGIN IMMEDIATE')
+        service.save_schedule_batch(self.conn,self.manager,dict(entity='cycle',items=writes))
+        self.conn.commit()
+        before=rows(self.conn,'SELECT * FROM periods ORDER BY id')
+        periods=[dict(employee_id=id,project_id=1,start='2026-10-05',end='2026-10-06',kind='sick',schedule_version=service.get(self.conn,'employees',id)['schedule_version']) for id in ids]
+        periods[1]['schedule_version']=-1
+        self.conn.execute('BEGIN IMMEDIATE')
+        with self.assertRaises(Problem):service.save_schedule_batch(self.conn,self.manager,dict(entity='periods',items=periods))
+        self.conn.rollback()
+        self.assertEqual(rows(self.conn,'SELECT * FROM periods ORDER BY id'),before)
+        periods[1]['schedule_version']=service.get(self.conn,'employees',ids[1])['schedule_version']
+        self.conn.execute('BEGIN IMMEDIATE')
+        result=service.save_schedule_batch(self.conn,self.manager,dict(entity='periods',items=periods))
+        self.conn.commit()
+        self.assertEqual(len(result['results']),2)
+        self.assertTrue(all(p['kind']=='sick' for p in result['results']))
+        with self.assertRaises(Problem):service.save_schedule_batch(self.conn,self.manager,dict(entity='periods',items=[periods[0],periods[0]]))
+        with self.assertRaises(Problem):service.save_schedule_batch(self.conn,self.manager,dict(entity='cycle',items=[]))
+
+    def test_project_creation_without_site_and_location_edit(self):
+        payload=dict(name='Vilnius team',country='LT',address='Gedimino pr. 10, Vilnius',start='2026-01-01',end='2027-12-31',manager_ids=[2])
+        project=service.save_admin(self.conn,self.admin,'projects',payload)
+        self.assertEqual(project['address'],payload['address']);self.assertEqual(project['country'],'LT')
+        shared=service.save_admin(self.conn,self.admin,'projects',{**payload,'name':'Other project','site_id':project['site_id']})
+        updated=service.save_admin(self.conn,self.admin,'projects',{**payload,'id':project['id'],'version':project['version'],'address':'Kauno g. 5, Vilnius','country':'PL'})
+        self.assertEqual(updated['address'],'Kauno g. 5, Vilnius')
+        self.assertEqual(self.conn.execute('SELECT address FROM projects WHERE id=?',(shared['id'],)).fetchone()[0],payload['address'])
+        self.manager['csrf']='test'
+        visible=service.snapshot(self.conn,self.manager)['projects']
+        self.assertEqual(next(p for p in visible if p['id']==project['id'])['country'],'PL')
+        self.assertNotIn('timezone',visible[0])
+    def test_project_country_and_address_validation_has_no_side_effects(self):
+        before=self.conn.execute('SELECT COUNT(*) FROM sites').fetchone()[0]
+        for address,country in [('', 'LT'),('Example street','ZZ')]:
+            with self.assertRaises(Problem):service.save_admin(self.conn,self.admin,'projects',dict(name='Invalid',address=address,country=country,start='2026-01-01',end='2027-12-31'))
+        self.assertEqual(self.conn.execute('SELECT COUNT(*) FROM sites').fetchone()[0],before)
+    def test_event_can_be_saved_without_timezone(self):
+        event=service.save_event(self.conn,self.manager,dict(employee_id=1,project_id=1,date='2026-10-01',kind='outbound',transport='car',time='14:20'))
+        self.assertEqual(event['time'],'14:20')
+        payload={k:v for k,v in event.items() if k!='timezone'}
+        self.assertEqual(service.save_event(self.conn,self.manager,{**payload,'time':'16:30'})['time'],'16:30')
     def test_passwords_are_salted_hashes(self):
         self.assertTrue(self.admin['password_hash'].startswith('scrypt$'));self.assertNotIn(self.passwords['admin'],self.admin['password_hash']);self.assertTrue(password_matches(self.passwords['admin'],self.admin['password_hash']))
     def test_manager_snapshot_and_export_isolation(self):
@@ -130,7 +178,7 @@ class DatabaseTests(unittest.TestCase):
         pdf=export(self.conn,self.manager,dict(project_id=1,start='2026-01-01',end='2026-12-31',paper='A4',include_events=True,include_notes=True))
         reader=PdfReader(io.BytesIO(pdf));self.assertGreaterEqual(len(reader.pages),14)
         text='\n'.join(p.extract_text() for p in reader.pages)
-        self.assertIn('Декабрь 2026',text);self.assertIn('31',text);self.assertIn('Kazlauskas Jonas',text);self.assertIn('Europe/Stockholm',text)
+        self.assertIn('Декабрь 2026',text);self.assertIn('31',text);self.assertIn('Kazlauskas Jonas',text);self.assertNotIn('Europe/Stockholm',text);self.assertIn('Kista, Stockholm',text)
         for page in reader.pages[:14]:
             text=page.extract_text();self.assertIn('Работник / специальность',text);self.assertIn('Работа',text);self.assertGreater(float(page.mediabox.width),float(page.mediabox.height))
     def test_multiple_managers_and_projects(self):
@@ -178,7 +226,7 @@ class DatabaseTests(unittest.TestCase):
         with self.assertRaises(Problem) as ctx:service.save_event(self.conn,other,{**event,'transport':'car'})
         self.assertEqual(ctx.exception.status,403)
     def test_migrations_are_idempotent(self):
-        migrate(self.conn);migrate(self.conn);self.assertEqual(self.conn.execute('SELECT count(*) FROM schema_migrations').fetchone()[0],7)
+        migrate(self.conn);migrate(self.conn);self.assertEqual(self.conn.execute('SELECT count(*) FROM schema_migrations').fetchone()[0],8)
 
 class EmployeePhotoTests(unittest.TestCase):
     setUp=DatabaseTests.setUp
@@ -344,6 +392,8 @@ class SecretaryAndTeamTests(unittest.TestCase):
         tables=['users','sessions','project_managers','employees','assignments','periods','events','audit']
         before={t:rows(legacy,f'SELECT * FROM {t}') for t in tables}
         migrate(legacy)
+        location=legacy.execute('SELECT address,country FROM projects WHERE id=1').fetchone()
+        self.assertEqual(location['address'],'Kista, Stockholm');self.assertEqual(location['country'],'Швеция')
         for t in tables:
             after=rows(legacy,f'SELECT * FROM {t}')
             self.assertEqual(before[t],[{k:r[k] for k in before[t][0]} for r in after] if before[t] else after)
@@ -352,6 +402,10 @@ class SecretaryAndTeamTests(unittest.TestCase):
         self.assertFalse(legacy.execute('PRAGMA foreign_key_check').fetchall());legacy.close()
 
 class HTTPTests(unittest.TestCase):
+    def test_country_catalog_is_available_before_login(self):
+        status,countries,_=self.request('countries')
+        self.assertEqual(status,200);self.assertEqual(len(countries),249)
+        self.assertEqual(countries['LT'][3],'Lithuania');self.assertEqual(countries['PL'][3],'Poland')
     @classmethod
     def setUpClass(cls):
         cls.tmp=tempfile.TemporaryDirectory();cls.old_db=os.environ.get('APP_DB');cls.old_origin=os.environ.get('APP_ORIGIN')

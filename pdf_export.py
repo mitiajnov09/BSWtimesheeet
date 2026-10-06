@@ -38,6 +38,9 @@ def export(conn,user,data):
     }[language]
     project=project_access(conn,user,data.get('project_id'))
     site=dict(conn.execute('SELECT * FROM sites WHERE id=?',(project['site_id'],)).fetchone())
+    countries=json.loads((Path(__file__).parent/'static/countries.json').read_text())
+    country=countries.get(project['country'],[project['country']]*4)[{'ru':0,'lt':1,'pl':2,'en':3}[language]]
+    location=', '.join(value for value in (project['address'] or site['address'] or site['city'],country) if value)
     start,end=date_range(data.get('start'),data.get('end'))
     paper=data.get('paper','A4')
     if paper not in ('A4','A3'):raise Problem('Выберите A4 или A3.')
@@ -108,7 +111,7 @@ def export(conn,user,data):
         text(width-100,20,extra['page']+' '+str(c.getPageNumber()),8)
     def title(subtitle):
         for i,line in enumerate(title_lines):text(margin,height-35-i*22,line,17)
-        text(margin,height-54-title_extra,site['city']+', '+site['country']+' · '+subtitle,9)
+        text(margin,height-54-title_extra,clipped(location,max(40,width-margin*2-pdfmetrics.stringWidth(' · '+subtitle,FONT,9)),9)+' · '+subtitle,9)
     def legend(y):
         x=margin
         for kind,label in labels.items():
@@ -212,7 +215,7 @@ def export(conn,user,data):
     for ev in events:
         if ev['employee_id'] not in allowed:continue
         e=allowed[ev['employee_id']]
-        details.append(e['last_name']+' '+e['first_name']+' · '+ev['date']+(' '+ev['time'] if ev['time'] else '')+' ('+ev['timezone']+') · '+event_labels[ev['kind']]+(' · '+tr(TRANSPORT_LABELS[ev.get('transport','plane')]) if ev['kind'] in ('outbound','return') else '')+' · '+ev['route']+' '+ev['flight']+(' · '+ev['notes'] if data.get('include_notes',True) and ev['notes'] else ''))
+        details.append(e['last_name']+' '+e['first_name']+' · '+ev['date']+(' '+ev['time'] if ev['time'] else '')+' · '+event_labels[ev['kind']]+(' · '+tr(TRANSPORT_LABELS[ev.get('transport','plane')]) if ev['kind'] in ('outbound','return') else '')+' · '+ev['route']+' '+ev['flight']+(' · '+ev['notes'] if data.get('include_notes',True) and ev['notes'] else ''))
     if details:
         title(extra['details']+' · '+start.isoformat()+' — '+end.isoformat());y=height-83-title_extra
         for detail in details:

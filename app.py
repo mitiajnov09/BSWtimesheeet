@@ -61,6 +61,7 @@ class Handler(BaseHTTPRequestHandler):
                 types={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.svg':'image/svg+xml','.webp':'image/webp'}
                 return self.respond(200,target.read_bytes(),types.get(target.suffix,'application/octet-stream'))
             if path=='/api/version' and method=='GET':return self.respond(200,{'version':APP_VERSION})
+            if path=='/api/countries' and method=='GET':return self.respond(200,(ROOT/'static/countries.json').read_bytes())
             conn=connect();data=self.read_json() if method in ('POST','DELETE') else {}
             if method!='GET':
                 origin=self.headers.get('Origin')
@@ -101,6 +102,7 @@ class Handler(BaseHTTPRequestHandler):
             if method=='DELETE':result=service.remove(conn,user,entity,data)
             elif entity=='periods':result=service.save_period(conn,user,data)
             elif entity=='cycle':result=service.cycle(conn,user,data)
+            elif entity=='schedule-batch':result=service.save_schedule_batch(conn,user,data)
             elif entity=='events':result=service.save_event(conn,user,data)
             elif entity=='feedback':result=feedback.submit(conn,user,data)
             elif entity=='feedback-status':result=feedback.set_status(conn,user,data)

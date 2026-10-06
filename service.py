@@ -1,11 +1,12 @@
 import hashlib, json, re, secrets, time
 from datetime import timedelta
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
-from db import rows, insert, audit, password_hash, password_matches
+from db import ROOT, rows, insert, audit, password_hash, password_matches
 from domain import Problem, day, date_range, overlap, validate_periods, generate_cycle, subtract_manual, available_layer
 
 KINDS={'work','rest','vacation','sick'}
 EVENT_KINDS={'outbound','return','arrival','departure','note'}
+COUNTRIES=json.loads((ROOT/'static/countries.json').read_text())
 
 def required(data,key):
     value=data.get(key)
@@ -86,7 +87,7 @@ def authenticate(conn,token):
     return dict(row)
 
 def snapshot(conn,user):
-    projects=rows(conn,'SELECT p.*,s.name site_name,s.country,s.city,s.timezone,s.address FROM projects p JOIN sites s ON s.id=p.site_id '+('' if user['role']=='admin' else 'WHERE p.id IN (SELECT project_id FROM project_managers WHERE user_id=?)'),() if user['role']=='admin' else (user['id'],))
+    projects=rows(conn,'SELECT p.*,s.name site_name,s.city FROM projects p JOIN sites s ON s.id=p.site_id '+('' if user['role']=='admin' else 'WHERE p.id IN (SELECT project_id FROM project_managers WHERE user_id=?)'),() if user['role']=='admin' else (user['id'],))
     ids=[p['id'] for p in projects]
     placeholders=','.join('?' for _ in ids) or 'NULL'
     assignments=rows(conn,f'SELECT * FROM assignments WHERE project_id IN ({placeholders})',ids)
@@ -112,7 +113,8 @@ def save_admin(conn,user,entity,data):
         changes={k:required(data,k) for k in ('name','country','city','timezone')}
         changes['timezone']=timezone(changes['timezone']);changes['address']=str(data.get('address',''))[:2000]
     elif entity=='projects':
-        site=get(conn,'sites',data.get('site_id'))
+        site_id=data.get('site_id',old['site_id'] if old else None)
+        site=get(conn,'sites',site_id) if site_id else None
         a,b=date_range(data.get('start'),data.get('end'))
         status=data.get('status','active')
         if status not in ('active','archived'):raise Problem('Неизвестный статус.')
@@ -122,13 +124,21 @@ def save_admin(conn,user,entity,data):
             # A change of site must not create cross-site assignment conflicts.
             for x in assignments:
                 others=rows(conn,'SELECT a.*,p.site_id FROM assignments a JOIN projects p ON p.id=a.project_id WHERE a.employee_id=? AND a.project_id!=?',(x['employee_id'],old['id']))
-                if any(z['site_id']!=site['id'] and overlap(x,z) for z in others):raise Problem('Смена объекта создаст конфликт назначений.',409)
-        changes=dict(name=required(data,'name'),site_id=site['id'],start=a.isoformat(),end=b.isoformat(),status=status,notes=str(data.get('notes',''))[:2000])
+                if site and site['id']!=old['site_id'] and any(z['site_id']!=site['id'] and overlap(x,z) for z in others):raise Problem('Смена объекта создаст конфликт назначений.',409)
+        address=data.get('address',(old['address'] if old else '') or (site['address'] or site['city'] if site else ''))
+        country=data.get('country',old['country'] if old else site['country'] if site else '')
+        if not isinstance(address,str) or not address.strip() or len(address)>2000:raise Problem('Укажите адрес проекта.')
+        if 'country' in data:
+            if country not in COUNTRIES and not (old and country==old['country']):raise Problem('Выберите страну из списка.')
+        elif not country:raise Problem('Выберите страну из списка.')
+        changes=dict(name=required(data,'name'),site_id=site['id'] if site else None,address=address.strip(),country=country,start=a.isoformat(),end=b.isoformat(),status=status,notes=str(data.get('notes',''))[:2000])
         manager_ids=data.get('manager_ids',[])
         if not isinstance(manager_ids,list):raise Problem('Выберите руководителей.')
         for id in manager_ids:
             manager=get(conn,'users',id)
             if manager['role'] not in ('manager','secretary') or not manager['active']:raise Problem('Назначайте активных руководителей или секретарей.')
+        if not site:
+            changes['site_id']=insert(conn,'sites',dict(name=changes['name'],country=country,city='',address=changes['address'],timezone='Europe/Vilnius'))
     elif entity=='employees':
         changes={k:required(data,k) for k in ('first_name','last_name','specialty')}
         changes['leadership']=data.get('leadership',old['leadership'] if old else 'none')
@@ -252,6 +262,19 @@ def cycle(conn,user,data):
     audit(conn,user,'Построение цикла','periods',eid,replaced,new+fragments,pid)
     return {'created':len(new),'preserved':len(preview['preserved'])}
 
+def save_schedule_batch(conn,user,data):
+    entity=data.get('entity')
+    items=data.get('items')
+    if entity not in ('cycle','periods') or not isinstance(items,list) or not items or len(items)>500:
+        raise Problem('Выберите работников для планирования.')
+    if any(not isinstance(item,dict) or item.get('id') for item in items):
+        raise Problem('Групповое планирование доступно только для новых периодов и циклов.')
+    ids=[item.get('employee_id') for item in items]
+    if any(type(id) is not int for id in ids) or len(set(ids))!=len(ids):
+        raise Problem('Список работников содержит повторения или неверные записи.')
+    operation=cycle if entity=='cycle' else save_period
+    return {'results':[operation(conn,user,item) for item in items]}
+
 def save_event(conn,user,data):
     old=get(conn,'events',data['id']) if data.get('id') else None
     pid=old['project_id'] if old else data.get('project_id');eid=old['employee_id'] if old else data.get('employee_id')
@@ -266,7 +289,7 @@ def save_event(conn,user,data):
     if event_time and not re.fullmatch(r'(?:[01]\d|2[0-3]):[0-5]\d',event_time):raise Problem('Время указывается в формате ЧЧ:ММ.')
     transport=data.get('transport',old['transport'] if old else 'plane')
     if transport not in ('plane','car','ferry'):raise Problem('Неизвестный вид транспорта.')
-    changes=dict(transport=transport,project_id=pid,employee_id=eid,date=date,time=event_time,timezone=timezone(data.get('timezone')),kind=kind,route=str(data.get('route',''))[:500],flight=str(data.get('flight',''))[:100],notes=str(data.get('notes',''))[:2000])
+    changes=dict(transport=transport,project_id=pid,employee_id=eid,date=date,time=event_time,timezone=timezone(data.get('timezone',old['timezone'] if old else 'Europe/Vilnius')),kind=kind,route=str(data.get('route',''))[:500],flight=str(data.get('flight',''))[:100],notes=str(data.get('notes',''))[:2000])
     id=old['id'] if old else insert(conn,'events',changes)
     new=update(conn,'events',old,changes) if old else get(conn,'events',id)
     audit(conn,user,'Изменение события' if old else 'Создание события','events',id,old,new,pid)

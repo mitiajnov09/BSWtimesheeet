@@ -2223,6 +2223,76 @@ const UI_TRANSLATIONS={
     "Išskleisti meniu",
     "Rozwiń menu",
     "Expand menu"
+  ],
+  "Адрес проекта": [
+    "Projekto adresas",
+    "Adres projektu",
+    "Project address"
+  ],
+  "Адреса, руководители и сроки работы": [
+    "Adresai, vadovai ir darbų laikotarpiai",
+    "Adresy, kierownicy i terminy pracy",
+    "Addresses, managers and work dates"
+  ],
+  "Найти страну…": [
+    "Ieškoti šalies…",
+    "Znajdź kraj…",
+    "Find a country…"
+  ],
+  "Выберите страну из списка.": [
+    "Pasirinkite šalį iš sąrašo.",
+    "Wybierz kraj z listy.",
+    "Choose a country from the list."
+  ],
+  "Укажите адрес проекта.": [
+    "Nurodykite projekto adresą.",
+    "Podaj adres projektu.",
+    "Enter the project address."
+  ],
+  "Создайте проект в разделе «Проекты».": [
+    "Sukurkite projektą skiltyje „Projektai“.",
+    "Utwórz projekt w sekcji „Projekty”.",
+    "Create a project in the Projects section."
+  ],
+  "Электрик": [
+    "Elektrikas",
+    "Elektryk",
+    "Electrician"
+  ],
+  "Механик": [
+    "Mechanikas",
+    "Mechanik",
+    "Mechanic"
+  ],
+  "Сварщик": [
+    "Suvirintojas",
+    "Spawacz",
+    "Welder"
+  ],
+  "Режим просмотра": [
+    "Peržiūros režimas",
+    "Tryb podglądu",
+    "View mode"
+  ],
+  "Выберите работников для планирования.": [
+    "Pasirinkite darbuotojus planavimui.",
+    "Wybierz pracowników do planowania.",
+    "Select employees to schedule."
+  ],
+  "Без ротации — заполнить вручную": [
+    "Be rotacijos — pildyti rankiniu būdu",
+    "Bez rotacji — wypełnij ręcznie",
+    "No rotation — fill in manually"
+  ],
+  "Добавить без ротации": [
+    "Pridėti be rotacijos",
+    "Dodaj bez rotacji",
+    "Add without rotation"
+  ],
+  "Работники в списке проекта. Заполните график вручную.": [
+    "Darbuotojai yra projekto sąraše. Užpildykite grafiką rankiniu būdu.",
+    "Pracownicy są na liście projektu. Wypełnij grafik ręcznie.",
+    "Employees are on the project list. Fill in the schedule manually."
   ]
 };
 const translationKeys=Object.keys(UI_TRANSLATIONS).sort((a,b)=>b.length-a.length);

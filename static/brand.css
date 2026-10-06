@@ -62,3 +62,11 @@ h1,h2,h3{color:inherit}.page-head h1{font-weight:700;letter-spacing:-.8px}.subhe
 }
 
 .version-badge{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:0;white-space:nowrap}.product-heading .version-badge{font-size:13px}
+
+.specialty-presets{display:flex;align-self:end;align-items:center;gap:6px;flex-wrap:wrap;min-height:38px}.specialty-presets button{font-size:11px;padding:7px 8px;min-height:32px}
+
+.project-card-badges{display:flex;align-items:center;gap:12px}.project-worker-count{display:inline-flex;align-items:center;gap:5px;color:var(--muted);font-size:12px;font-weight:600;white-space:nowrap}.project-worker-count .i{width:18px;height:18px}.project-card-badges .pill{display:inline-block}
+
+.role-view-control{display:flex;flex-direction:row;align-items:center;gap:6px;white-space:nowrap}.role-view-control>span{font-size:11px}.role-view-control select{max-width:190px;font-size:12px;min-height:32px}@media(max-width:760px){.role-view-control>span{display:none}.role-view-control select{max-width:115px}.topline .status-save{gap:4px}.topline:has(.role-view-control){height:auto;min-height:48px;flex-wrap:wrap;gap:8px;padding:8px 0}}
+
+.plan-worker-list{max-height:300px}.plan-worker-list .check-label[hidden]{display:none}.plan-worker-list .check-label{padding:6px 0}.plan-worker-list small{display:block;font-size:11px;margin-top:3px}

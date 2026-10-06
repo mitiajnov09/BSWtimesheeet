@@ -1,0 +1,1496 @@
+{
+  "AD": [
+    "Андорра",
+    "Andora",
+    "Andora",
+    "Andorra"
+  ],
+  "AE": [
+    "ОАЭ",
+    "Jungtiniai Arabų Emyratai",
+    "Zjednoczone Emiraty Arabskie",
+    "United Arab Emirates"
+  ],
+  "AF": [
+    "Афганистан",
+    "Afganistanas",
+    "Afganistan",
+    "Afghanistan"
+  ],
+  "AG": [
+    "Антигуа и Барбуда",
+    "Antigva ir Barbuda",
+    "Antigua i Barbuda",
+    "Antigua & Barbuda"
+  ],
+  "AI": [
+    "Ангилья",
+    "Angilija",
+    "Anguilla",
+    "Anguilla"
+  ],
+  "AL": [
+    "Албания",
+    "Albanija",
+    "Albania",
+    "Albania"
+  ],
+  "AM": [
+    "Армения",
+    "Armėnija",
+    "Armenia",
+    "Armenia"
+  ],
+  "AO": [
+    "Ангола",
+    "Angola",
+    "Angola",
+    "Angola"
+  ],
+  "AQ": [
+    "Антарктида",
+    "Antarktida",
+    "Antarktyda",
+    "Antarctica"
+  ],
+  "AR": [
+    "Аргентина",
+    "Argentina",
+    "Argentyna",
+    "Argentina"
+  ],
+  "AS": [
+    "Американское Самоа",
+    "Amerikos Samoa",
+    "Samoa Amerykańskie",
+    "American Samoa"
+  ],
+  "AT": [
+    "Австрия",
+    "Austrija",
+    "Austria",
+    "Austria"
+  ],
+  "AU": [
+    "Австралия",
+    "Australija",
+    "Australia",
+    "Australia"
+  ],
+  "AW": [
+    "Аруба",
+    "Aruba",
+    "Aruba",
+    "Aruba"
+  ],
+  "AX": [
+    "Аландские о-ва",
+    "Alandų Salos",
+    "Wyspy Alandzkie",
+    "Åland Islands"
+  ],
+  "AZ": [
+    "Азербайджан",
+    "Azerbaidžanas",
+    "Azerbejdżan",
+    "Azerbaijan"
+  ],
+  "BA": [
+    "Босния и Герцеговина",
+    "Bosnija ir Hercegovina",
+    "Bośnia i Hercegowina",
+    "Bosnia & Herzegovina"
+  ],
+  "BB": [
+    "Барбадос",
+    "Barbadosas",
+    "Barbados",
+    "Barbados"
+  ],
+  "BD": [
+    "Бангладеш",
+    "Bangladešas",
+    "Bangladesz",
+    "Bangladesh"
+  ],
+  "BE": [
+    "Бельгия",
+    "Belgija",
+    "Belgia",
+    "Belgium"
+  ],
+  "BF": [
+    "Буркина-Фасо",
+    "Burkina Fasas",
+    "Burkina Faso",
+    "Burkina Faso"
+  ],
+  "BG": [
+    "Болгария",
+    "Bulgarija",
+    "Bułgaria",
+    "Bulgaria"
+  ],
+  "BH": [
+    "Бахрейн",
+    "Bahreinas",
+    "Bahrajn",
+    "Bahrain"
+  ],
+  "BI": [
+    "Бурунди",
+    "Burundis",
+    "Burundi",
+    "Burundi"
+  ],
+  "BJ": [
+    "Бенин",
+    "Beninas",
+    "Benin",
+    "Benin"
+  ],
+  "BL": [
+    "Сен-Бартелеми",
+    "Sen Bartelemi",
+    "Saint-Barthélemy",
+    "St. Barthélemy"
+  ],
+  "BM": [
+    "Бермудские о-ва",
+    "Bermuda",
+    "Bermudy",
+    "Bermuda"
+  ],
+  "BN": [
+    "Бруней",
+    "Brunėjus",
+    "Brunei",
+    "Brunei"
+  ],
+  "BO": [
+    "Боливия",
+    "Bolivija",
+    "Boliwia",
+    "Bolivia"
+  ],
+  "BQ": [
+    "Бонэйр, Синт-Эстатиус и Саба",
+    "Karibų Nyderlandai",
+    "Niderlandy Karaibskie",
+    "Caribbean Netherlands"
+  ],
+  "BR": [
+    "Бразилия",
+    "Brazilija",
+    "Brazylia",
+    "Brazil"
+  ],
+  "BS": [
+    "Багамы",
+    "Bahamos",
+    "Bahamy",
+    "Bahamas"
+  ],
+  "BT": [
+    "Бутан",
+    "Butanas",
+    "Bhutan",
+    "Bhutan"
+  ],
+  "BV": [
+    "о-в Буве",
+    "Buvė Sala",
+    "Wyspa Bouveta",
+    "Bouvet Island"
+  ],
+  "BW": [
+    "Ботсвана",
+    "Botsvana",
+    "Botswana",
+    "Botswana"
+  ],
+  "BY": [
+    "Беларусь",
+    "Baltarusija",
+    "Białoruś",
+    "Belarus"
+  ],
+  "BZ": [
+    "Белиз",
+    "Belizas",
+    "Belize",
+    "Belize"
+  ],
+  "CA": [
+    "Канада",
+    "Kanada",
+    "Kanada",
+    "Canada"
+  ],
+  "CC": [
+    "Кокосовые о-ва",
+    "Kokosų (Kilingo) Salos",
+    "Wyspy Kokosowe",
+    "Cocos (Keeling) Islands"
+  ],
+  "CD": [
+    "Конго - Киншаса",
+    "Kongas-Kinšasa",
+    "Demokratyczna Republika Konga",
+    "Congo - Kinshasa"
+  ],
+  "CF": [
+    "Центрально-Африканская Республика",
+    "Centrinės Afrikos Respublika",
+    "Republika Środkowoafrykańska",
+    "Central African Republic"
+  ],
+  "CG": [
+    "Конго - Браззавиль",
+    "Kongas-Brazavilis",
+    "Kongo",
+    "Congo - Brazzaville"
+  ],
+  "CH": [
+    "Швейцария",
+    "Šveicarija",
+    "Szwajcaria",
+    "Switzerland"
+  ],
+  "CI": [
+    "Кот-д’Ивуар",
+    "Dramblio Kaulo Krantas",
+    "Côte d’Ivoire",
+    "Côte d’Ivoire"
+  ],
+  "CK": [
+    "о-ва Кука",
+    "Kuko Salos",
+    "Wyspy Cooka",
+    "Cook Islands"
+  ],
+  "CL": [
+    "Чили",
+    "Čilė",
+    "Chile",
+    "Chile"
+  ],
+  "CM": [
+    "Камерун",
+    "Kamerūnas",
+    "Kamerun",
+    "Cameroon"
+  ],
+  "CN": [
+    "Китай",
+    "Kinija",
+    "Chiny",
+    "China"
+  ],
+  "CO": [
+    "Колумбия",
+    "Kolumbija",
+    "Kolumbia",
+    "Colombia"
+  ],
+  "CR": [
+    "Коста-Рика",
+    "Kosta Rika",
+    "Kostaryka",
+    "Costa Rica"
+  ],
+  "CU": [
+    "Куба",
+    "Kuba",
+    "Kuba",
+    "Cuba"
+  ],
+  "CV": [
+    "Кабо-Верде",
+    "Žaliasis Kyšulys",
+    "Republika Zielonego Przylądka",
+    "Cape Verde"
+  ],
+  "CW": [
+    "Кюрасао",
+    "Kiurasao",
+    "Curaçao",
+    "Curaçao"
+  ],
+  "CX": [
+    "о-в Рождества",
+    "Kalėdų Sala",
+    "Wyspa Bożego Narodzenia",
+    "Christmas Island"
+  ],
+  "CY": [
+    "Кипр",
+    "Kipras",
+    "Cypr",
+    "Cyprus"
+  ],
+  "CZ": [
+    "Чехия",
+    "Čekija",
+    "Czechy",
+    "Czechia"
+  ],
+  "DE": [
+    "Германия",
+    "Vokietija",
+    "Niemcy",
+    "Germany"
+  ],
+  "DJ": [
+    "Джибути",
+    "Džibutis",
+    "Dżibuti",
+    "Djibouti"
+  ],
+  "DK": [
+    "Дания",
+    "Danija",
+    "Dania",
+    "Denmark"
+  ],
+  "DM": [
+    "Доминика",
+    "Dominika",
+    "Dominika",
+    "Dominica"
+  ],
+  "DO": [
+    "Доминиканская Республика",
+    "Dominikos Respublika",
+    "Dominikana",
+    "Dominican Republic"
+  ],
+  "DZ": [
+    "Алжир",
+    "Alžyras",
+    "Algieria",
+    "Algeria"
+  ],
+  "EC": [
+    "Эквадор",
+    "Ekvadoras",
+    "Ekwador",
+    "Ecuador"
+  ],
+  "EE": [
+    "Эстония",
+    "Estija",
+    "Estonia",
+    "Estonia"
+  ],
+  "EG": [
+    "Египет",
+    "Egiptas",
+    "Egipt",
+    "Egypt"
+  ],
+  "EH": [
+    "Западная Сахара",
+    "Vakarų Sachara",
+    "Sahara Zachodnia",
+    "Western Sahara"
+  ],
+  "ER": [
+    "Эритрея",
+    "Eritrėja",
+    "Erytrea",
+    "Eritrea"
+  ],
+  "ES": [
+    "Испания",
+    "Ispanija",
+    "Hiszpania",
+    "Spain"
+  ],
+  "ET": [
+    "Эфиопия",
+    "Etiopija",
+    "Etiopia",
+    "Ethiopia"
+  ],
+  "FI": [
+    "Финляндия",
+    "Suomija",
+    "Finlandia",
+    "Finland"
+  ],
+  "FJ": [
+    "Фиджи",
+    "Fidžis",
+    "Fidżi",
+    "Fiji"
+  ],
+  "FK": [
+    "Фолклендские о-ва",
+    "Folklando salos",
+    "Falklandy",
+    "Falkland Islands"
+  ],
+  "FM": [
+    "Федеративные Штаты Микронезии",
+    "Mikronezija",
+    "Mikronezja",
+    "Micronesia"
+  ],
+  "FO": [
+    "Фарерские о-ва",
+    "Farerų Salos",
+    "Wyspy Owcze",
+    "Faroe Islands"
+  ],
+  "FR": [
+    "Франция",
+    "Prancūzija",
+    "Francja",
+    "France"
+  ],
+  "GA": [
+    "Габон",
+    "Gabonas",
+    "Gabon",
+    "Gabon"
+  ],
+  "GB": [
+    "Великобритания",
+    "Jungtinė Karalystė",
+    "Wielka Brytania",
+    "United Kingdom"
+  ],
+  "GD": [
+    "Гренада",
+    "Grenada",
+    "Grenada",
+    "Grenada"
+  ],
+  "GE": [
+    "Грузия",
+    "Gruzija",
+    "Gruzja",
+    "Georgia"
+  ],
+  "GF": [
+    "Французская Гвиана",
+    "Prancūzijos Gviana",
+    "Gujana Francuska",
+    "French Guiana"
+  ],
+  "GG": [
+    "Гернси",
+    "Gernsis",
+    "Guernsey",
+    "Guernsey"
+  ],
+  "GH": [
+    "Гана",
+    "Gana",
+    "Ghana",
+    "Ghana"
+  ],
+  "GI": [
+    "Гибралтар",
+    "Gibraltaras",
+    "Gibraltar",
+    "Gibraltar"
+  ],
+  "GL": [
+    "Гренландия",
+    "Grenlandija",
+    "Grenlandia",
+    "Greenland"
+  ],
+  "GM": [
+    "Гамбия",
+    "Gambija",
+    "Gambia",
+    "Gambia"
+  ],
+  "GN": [
+    "Гвинея",
+    "Gvinėja",
+    "Gwinea",
+    "Guinea"
+  ],
+  "GP": [
+    "Гваделупа",
+    "Gvadelupa",
+    "Gwadelupa",
+    "Guadeloupe"
+  ],
+  "GQ": [
+    "Экваториальная Гвинея",
+    "Pusiaujo Gvinėja",
+    "Gwinea Równikowa",
+    "Equatorial Guinea"
+  ],
+  "GR": [
+    "Греция",
+    "Graikija",
+    "Grecja",
+    "Greece"
+  ],
+  "GS": [
+    "Южная Георгия и Южные Сандвичевы о-ва",
+    "Pietų Džordžija ir Pietų Sandvičo salos",
+    "Georgia Południowa i Sandwich Południowy",
+    "South Georgia & South Sandwich Islands"
+  ],
+  "GT": [
+    "Гватемала",
+    "Gvatemala",
+    "Gwatemala",
+    "Guatemala"
+  ],
+  "GU": [
+    "Гуам",
+    "Guamas",
+    "Guam",
+    "Guam"
+  ],
+  "GW": [
+    "Гвинея-Бисау",
+    "Bisau Gvinėja",
+    "Gwinea Bissau",
+    "Guinea-Bissau"
+  ],
+  "GY": [
+    "Гайана",
+    "Gajana",
+    "Gujana",
+    "Guyana"
+  ],
+  "HK": [
+    "Гонконг (САР)",
+    "Ypatingasis Administracinis Kinijos Regionas Honkongas",
+    "SRA Hongkong (Chiny)",
+    "Hong Kong SAR China"
+  ],
+  "HM": [
+    "о-ва Херд и Макдональд",
+    "Herdo ir Makdonaldo Salos",
+    "Wyspy Heard i McDonalda",
+    "Heard & McDonald Islands"
+  ],
+  "HN": [
+    "Гондурас",
+    "Hondūras",
+    "Honduras",
+    "Honduras"
+  ],
+  "HR": [
+    "Хорватия",
+    "Kroatija",
+    "Chorwacja",
+    "Croatia"
+  ],
+  "HT": [
+    "Гаити",
+    "Haitis",
+    "Haiti",
+    "Haiti"
+  ],
+  "HU": [
+    "Венгрия",
+    "Vengrija",
+    "Węgry",
+    "Hungary"
+  ],
+  "ID": [
+    "Индонезия",
+    "Indonezija",
+    "Indonezja",
+    "Indonesia"
+  ],
+  "IE": [
+    "Ирландия",
+    "Airija",
+    "Irlandia",
+    "Ireland"
+  ],
+  "IL": [
+    "Израиль",
+    "Izraelis",
+    "Izrael",
+    "Israel"
+  ],
+  "IM": [
+    "о-в Мэн",
+    "Meno Sala",
+    "Wyspa Man",
+    "Isle of Man"
+  ],
+  "IN": [
+    "Индия",
+    "Indija",
+    "Indie",
+    "India"
+  ],
+  "IO": [
+    "Британская территория в Индийском океане",
+    "Indijos Vandenyno Britų Sritis",
+    "Brytyjskie Terytorium Oceanu Indyjskiego",
+    "British Indian Ocean Territory"
+  ],
+  "IQ": [
+    "Ирак",
+    "Irakas",
+    "Irak",
+    "Iraq"
+  ],
+  "IR": [
+    "Иран",
+    "Iranas",
+    "Iran",
+    "Iran"
+  ],
+  "IS": [
+    "Исландия",
+    "Islandija",
+    "Islandia",
+    "Iceland"
+  ],
+  "IT": [
+    "Италия",
+    "Italija",
+    "Włochy",
+    "Italy"
+  ],
+  "JE": [
+    "Джерси",
+    "Džersis",
+    "Jersey",
+    "Jersey"
+  ],
+  "JM": [
+    "Ямайка",
+    "Jamaika",
+    "Jamajka",
+    "Jamaica"
+  ],
+  "JO": [
+    "Иордания",
+    "Jordanija",
+    "Jordania",
+    "Jordan"
+  ],
+  "JP": [
+    "Япония",
+    "Japonija",
+    "Japonia",
+    "Japan"
+  ],
+  "KE": [
+    "Кения",
+    "Kenija",
+    "Kenia",
+    "Kenya"
+  ],
+  "KG": [
+    "Киргизия",
+    "Kirgizija",
+    "Kirgistan",
+    "Kyrgyzstan"
+  ],
+  "KH": [
+    "Камбоджа",
+    "Kambodža",
+    "Kambodża",
+    "Cambodia"
+  ],
+  "KI": [
+    "Кирибати",
+    "Kiribatis",
+    "Kiribati",
+    "Kiribati"
+  ],
+  "KM": [
+    "Коморы",
+    "Komorai",
+    "Komory",
+    "Comoros"
+  ],
+  "KN": [
+    "Сент-Китс и Невис",
+    "Sent Kitsas ir Nevis",
+    "Saint Kitts i Nevis",
+    "St. Kitts & Nevis"
+  ],
+  "KP": [
+    "КНДР",
+    "Šiaurės Korėja",
+    "Korea Północna",
+    "North Korea"
+  ],
+  "KR": [
+    "Республика Корея",
+    "Pietų Korėja",
+    "Korea Południowa",
+    "South Korea"
+  ],
+  "KW": [
+    "Кувейт",
+    "Kuveitas",
+    "Kuwejt",
+    "Kuwait"
+  ],
+  "KY": [
+    "о-ва Кайман",
+    "Kaimanų Salos",
+    "Kajmany",
+    "Cayman Islands"
+  ],
+  "KZ": [
+    "Казахстан",
+    "Kazachstanas",
+    "Kazachstan",
+    "Kazakhstan"
+  ],
+  "LA": [
+    "Лаос",
+    "Laosas",
+    "Laos",
+    "Laos"
+  ],
+  "LB": [
+    "Ливан",
+    "Libanas",
+    "Liban",
+    "Lebanon"
+  ],
+  "LC": [
+    "Сент-Люсия",
+    "Sent Lusija",
+    "Saint Lucia",
+    "St. Lucia"
+  ],
+  "LI": [
+    "Лихтенштейн",
+    "Lichtenšteinas",
+    "Liechtenstein",
+    "Liechtenstein"
+  ],
+  "LK": [
+    "Шри-Ланка",
+    "Šri Lanka",
+    "Sri Lanka",
+    "Sri Lanka"
+  ],
+  "LR": [
+    "Либерия",
+    "Liberija",
+    "Liberia",
+    "Liberia"
+  ],
+  "LS": [
+    "Лесото",
+    "Lesotas",
+    "Lesotho",
+    "Lesotho"
+  ],
+  "LT": [
+    "Литва",
+    "Lietuva",
+    "Litwa",
+    "Lithuania"
+  ],
+  "LU": [
+    "Люксембург",
+    "Liuksemburgas",
+    "Luksemburg",
+    "Luxembourg"
+  ],
+  "LV": [
+    "Латвия",
+    "Latvija",
+    "Łotwa",
+    "Latvia"
+  ],
+  "LY": [
+    "Ливия",
+    "Libija",
+    "Libia",
+    "Libya"
+  ],
+  "MA": [
+    "Марокко",
+    "Marokas",
+    "Maroko",
+    "Morocco"
+  ],
+  "MC": [
+    "Монако",
+    "Monakas",
+    "Monako",
+    "Monaco"
+  ],
+  "MD": [
+    "Молдова",
+    "Moldova",
+    "Mołdawia",
+    "Moldova"
+  ],
+  "ME": [
+    "Черногория",
+    "Juodkalnija",
+    "Czarnogóra",
+    "Montenegro"
+  ],
+  "MF": [
+    "Сен-Мартен",
+    "Sen Martenas",
+    "Saint-Martin",
+    "St. Martin"
+  ],
+  "MG": [
+    "Мадагаскар",
+    "Madagaskaras",
+    "Madagaskar",
+    "Madagascar"
+  ],
+  "MH": [
+    "Маршалловы о-ва",
+    "Maršalo Salos",
+    "Wyspy Marshalla",
+    "Marshall Islands"
+  ],
+  "MK": [
+    "Северная Македония",
+    "Šiaurės Makedonija",
+    "Macedonia Północna",
+    "North Macedonia"
+  ],
+  "ML": [
+    "Мали",
+    "Malis",
+    "Mali",
+    "Mali"
+  ],
+  "MM": [
+    "Мьянма (Бирма)",
+    "Mianmaras (Birma)",
+    "Mjanma (Birma)",
+    "Myanmar (Burma)"
+  ],
+  "MN": [
+    "Монголия",
+    "Mongolija",
+    "Mongolia",
+    "Mongolia"
+  ],
+  "MO": [
+    "Макао (САР)",
+    "Ypatingasis Administracinis Kinijos Regionas Makao",
+    "SRA Makau (Chiny)",
+    "Macao SAR China"
+  ],
+  "MP": [
+    "Северные Марианские о-ва",
+    "Marianos Šiaurinės Salos",
+    "Mariany Północne",
+    "Northern Mariana Islands"
+  ],
+  "MQ": [
+    "Мартиника",
+    "Martinika",
+    "Martynika",
+    "Martinique"
+  ],
+  "MR": [
+    "Мавритания",
+    "Mauritanija",
+    "Mauretania",
+    "Mauritania"
+  ],
+  "MS": [
+    "Монтсеррат",
+    "Montseratas",
+    "Montserrat",
+    "Montserrat"
+  ],
+  "MT": [
+    "Мальта",
+    "Malta",
+    "Malta",
+    "Malta"
+  ],
+  "MU": [
+    "Маврикий",
+    "Mauricijus",
+    "Mauritius",
+    "Mauritius"
+  ],
+  "MV": [
+    "Мальдивы",
+    "Maldyvai",
+    "Malediwy",
+    "Maldives"
+  ],
+  "MW": [
+    "Малави",
+    "Malavis",
+    "Malawi",
+    "Malawi"
+  ],
+  "MX": [
+    "Мексика",
+    "Meksika",
+    "Meksyk",
+    "Mexico"
+  ],
+  "MY": [
+    "Малайзия",
+    "Malaizija",
+    "Malezja",
+    "Malaysia"
+  ],
+  "MZ": [
+    "Мозамбик",
+    "Mozambikas",
+    "Mozambik",
+    "Mozambique"
+  ],
+  "NA": [
+    "Намибия",
+    "Namibija",
+    "Namibia",
+    "Namibia"
+  ],
+  "NC": [
+    "Новая Каледония",
+    "Naujoji Kaledonija",
+    "Nowa Kaledonia",
+    "New Caledonia"
+  ],
+  "NE": [
+    "Нигер",
+    "Nigeris",
+    "Niger",
+    "Niger"
+  ],
+  "NF": [
+    "о-в Норфолк",
+    "Norfolko sala",
+    "Norfolk",
+    "Norfolk Island"
+  ],
+  "NG": [
+    "Нигерия",
+    "Nigerija",
+    "Nigeria",
+    "Nigeria"
+  ],
+  "NI": [
+    "Никарагуа",
+    "Nikaragva",
+    "Nikaragua",
+    "Nicaragua"
+  ],
+  "NL": [
+    "Нидерланды",
+    "Nyderlandai",
+    "Holandia",
+    "Netherlands"
+  ],
+  "NO": [
+    "Норвегия",
+    "Norvegija",
+    "Norwegia",
+    "Norway"
+  ],
+  "NP": [
+    "Непал",
+    "Nepalas",
+    "Nepal",
+    "Nepal"
+  ],
+  "NR": [
+    "Науру",
+    "Nauru",
+    "Nauru",
+    "Nauru"
+  ],
+  "NU": [
+    "Ниуэ",
+    "Niujė",
+    "Niue",
+    "Niue"
+  ],
+  "NZ": [
+    "Новая Зеландия",
+    "Naujoji Zelandija",
+    "Nowa Zelandia",
+    "New Zealand"
+  ],
+  "OM": [
+    "Оман",
+    "Omanas",
+    "Oman",
+    "Oman"
+  ],
+  "PA": [
+    "Панама",
+    "Panama",
+    "Panama",
+    "Panama"
+  ],
+  "PE": [
+    "Перу",
+    "Peru",
+    "Peru",
+    "Peru"
+  ],
+  "PF": [
+    "Французская Полинезия",
+    "Prancūzijos Polinezija",
+    "Polinezja Francuska",
+    "French Polynesia"
+  ],
+  "PG": [
+    "Папуа — Новая Гвинея",
+    "Papua Naujoji Gvinėja",
+    "Papua-Nowa Gwinea",
+    "Papua New Guinea"
+  ],
+  "PH": [
+    "Филиппины",
+    "Filipinai",
+    "Filipiny",
+    "Philippines"
+  ],
+  "PK": [
+    "Пакистан",
+    "Pakistanas",
+    "Pakistan",
+    "Pakistan"
+  ],
+  "PL": [
+    "Польша",
+    "Lenkija",
+    "Polska",
+    "Poland"
+  ],
+  "PM": [
+    "Сен-Пьер и Микелон",
+    "Sen Pjeras ir Mikelonas",
+    "Saint-Pierre i Miquelon",
+    "St. Pierre & Miquelon"
+  ],
+  "PN": [
+    "о-ва Питкэрн",
+    "Pitkerno salos",
+    "Pitcairn",
+    "Pitcairn Islands"
+  ],
+  "PR": [
+    "Пуэрто-Рико",
+    "Puerto Rikas",
+    "Portoryko",
+    "Puerto Rico"
+  ],
+  "PS": [
+    "Палестинские территории",
+    "Palestinos teritorija",
+    "Terytoria Palestyńskie",
+    "Palestinian Territories"
+  ],
+  "PT": [
+    "Португалия",
+    "Portugalija",
+    "Portugalia",
+    "Portugal"
+  ],
+  "PW": [
+    "Палау",
+    "Palau",
+    "Palau",
+    "Palau"
+  ],
+  "PY": [
+    "Парагвай",
+    "Paragvajus",
+    "Paragwaj",
+    "Paraguay"
+  ],
+  "QA": [
+    "Катар",
+    "Kataras",
+    "Katar",
+    "Qatar"
+  ],
+  "RE": [
+    "Реюньон",
+    "Reunjonas",
+    "Reunion",
+    "Réunion"
+  ],
+  "RO": [
+    "Румыния",
+    "Rumunija",
+    "Rumunia",
+    "Romania"
+  ],
+  "RS": [
+    "Сербия",
+    "Serbija",
+    "Serbia",
+    "Serbia"
+  ],
+  "RU": [
+    "Россия",
+    "Rusija",
+    "Rosja",
+    "Russia"
+  ],
+  "RW": [
+    "Руанда",
+    "Ruanda",
+    "Rwanda",
+    "Rwanda"
+  ],
+  "SA": [
+    "Саудовская Аравия",
+    "Saudo Arabija",
+    "Arabia Saudyjska",
+    "Saudi Arabia"
+  ],
+  "SB": [
+    "Соломоновы о-ва",
+    "Saliamono Salos",
+    "Wyspy Salomona",
+    "Solomon Islands"
+  ],
+  "SC": [
+    "Сейшельские о-ва",
+    "Seišeliai",
+    "Seszele",
+    "Seychelles"
+  ],
+  "SD": [
+    "Судан",
+    "Sudanas",
+    "Sudan",
+    "Sudan"
+  ],
+  "SE": [
+    "Швеция",
+    "Švedija",
+    "Szwecja",
+    "Sweden"
+  ],
+  "SG": [
+    "Сингапур",
+    "Singapūras",
+    "Singapur",
+    "Singapore"
+  ],
+  "SH": [
+    "о-в Св. Елены",
+    "Šv. Elenos Sala",
+    "Wyspa Świętej Heleny",
+    "St. Helena"
+  ],
+  "SI": [
+    "Словения",
+    "Slovėnija",
+    "Słowenia",
+    "Slovenia"
+  ],
+  "SJ": [
+    "Шпицберген и Ян-Майен",
+    "Svalbardas ir Janas Majenas",
+    "Svalbard i Jan Mayen",
+    "Svalbard & Jan Mayen"
+  ],
+  "SK": [
+    "Словакия",
+    "Slovakija",
+    "Słowacja",
+    "Slovakia"
+  ],
+  "SL": [
+    "Сьерра-Леоне",
+    "Siera Leonė",
+    "Sierra Leone",
+    "Sierra Leone"
+  ],
+  "SM": [
+    "Сан-Марино",
+    "San Marinas",
+    "San Marino",
+    "San Marino"
+  ],
+  "SN": [
+    "Сенегал",
+    "Senegalas",
+    "Senegal",
+    "Senegal"
+  ],
+  "SO": [
+    "Сомали",
+    "Somalis",
+    "Somalia",
+    "Somalia"
+  ],
+  "SR": [
+    "Суринам",
+    "Surinamas",
+    "Surinam",
+    "Suriname"
+  ],
+  "SS": [
+    "Южный Судан",
+    "Pietų Sudanas",
+    "Sudan Południowy",
+    "South Sudan"
+  ],
+  "ST": [
+    "Сан-Томе и Принсипи",
+    "San Tomė ir Prinsipė",
+    "Wyspy Świętego Tomasza i Książęca",
+    "São Tomé & Príncipe"
+  ],
+  "SV": [
+    "Сальвадор",
+    "Salvadoras",
+    "Salwador",
+    "El Salvador"
+  ],
+  "SX": [
+    "Синт-Мартен",
+    "Sint Martenas",
+    "Sint Maarten",
+    "Sint Maarten"
+  ],
+  "SY": [
+    "Сирия",
+    "Sirija",
+    "Syria",
+    "Syria"
+  ],
+  "SZ": [
+    "Эсватини",
+    "Svazilandas",
+    "Eswatini",
+    "Eswatini"
+  ],
+  "TC": [
+    "Тёркс и Кайкос",
+    "Terkso ir Kaikoso Salos",
+    "Turks i Caicos",
+    "Turks & Caicos Islands"
+  ],
+  "TD": [
+    "Чад",
+    "Čadas",
+    "Czad",
+    "Chad"
+  ],
+  "TF": [
+    "Французские Южные территории",
+    "Prancūzijos Pietų sritys",
+    "Francuskie Terytoria Południowe i Antarktyczne",
+    "French Southern Territories"
+  ],
+  "TG": [
+    "Того",
+    "Togas",
+    "Togo",
+    "Togo"
+  ],
+  "TH": [
+    "Таиланд",
+    "Tailandas",
+    "Tajlandia",
+    "Thailand"
+  ],
+  "TJ": [
+    "Таджикистан",
+    "Tadžikija",
+    "Tadżykistan",
+    "Tajikistan"
+  ],
+  "TK": [
+    "Токелау",
+    "Tokelau",
+    "Tokelau",
+    "Tokelau"
+  ],
+  "TL": [
+    "Восточный Тимор",
+    "Rytų Timoras",
+    "Timor Wschodni",
+    "Timor-Leste"
+  ],
+  "TM": [
+    "Туркменистан",
+    "Turkmėnistanas",
+    "Turkmenistan",
+    "Turkmenistan"
+  ],
+  "TN": [
+    "Тунис",
+    "Tunisas",
+    "Tunezja",
+    "Tunisia"
+  ],
+  "TO": [
+    "Тонга",
+    "Tonga",
+    "Tonga",
+    "Tonga"
+  ],
+  "TR": [
+    "Турция",
+    "Turkija",
+    "Turcja",
+    "Türkiye"
+  ],
+  "TT": [
+    "Тринидад и Тобаго",
+    "Trinidadas ir Tobagas",
+    "Trynidad i Tobago",
+    "Trinidad & Tobago"
+  ],
+  "TV": [
+    "Тувалу",
+    "Tuvalu",
+    "Tuvalu",
+    "Tuvalu"
+  ],
+  "TW": [
+    "Тайвань",
+    "Taivanas",
+    "Tajwan",
+    "Taiwan"
+  ],
+  "TZ": [
+    "Танзания",
+    "Tanzanija",
+    "Tanzania",
+    "Tanzania"
+  ],
+  "UA": [
+    "Украина",
+    "Ukraina",
+    "Ukraina",
+    "Ukraine"
+  ],
+  "UG": [
+    "Уганда",
+    "Uganda",
+    "Uganda",
+    "Uganda"
+  ],
+  "UM": [
+    "Внешние малые о-ва (США)",
+    "Jungtinių Valstijų Mažosios Tolimosios Salos",
+    "Dalekie Wyspy Mniejsze Stanów Zjednoczonych",
+    "U.S. Outlying Islands"
+  ],
+  "US": [
+    "Соединенные Штаты",
+    "Jungtinės Valstijos",
+    "Stany Zjednoczone",
+    "United States"
+  ],
+  "UY": [
+    "Уругвай",
+    "Urugvajus",
+    "Urugwaj",
+    "Uruguay"
+  ],
+  "UZ": [
+    "Узбекистан",
+    "Uzbekistanas",
+    "Uzbekistan",
+    "Uzbekistan"
+  ],
+  "VA": [
+    "Ватикан",
+    "Vatikano Miesto Valstybė",
+    "Watykan",
+    "Vatican City"
+  ],
+  "VC": [
+    "Сент-Винсент и Гренадины",
+    "Šventasis Vincentas ir Grenadinai",
+    "Saint Vincent i Grenadyny",
+    "St. Vincent & Grenadines"
+  ],
+  "VE": [
+    "Венесуэла",
+    "Venesuela",
+    "Wenezuela",
+    "Venezuela"
+  ],
+  "VG": [
+    "Виргинские о-ва (Великобритания)",
+    "Didžiosios Britanijos Mergelių Salos",
+    "Brytyjskie Wyspy Dziewicze",
+    "British Virgin Islands"
+  ],
+  "VI": [
+    "Виргинские о-ва (США)",
+    "Jungtinių Valstijų Mergelių Salos",
+    "Wyspy Dziewicze Stanów Zjednoczonych",
+    "U.S. Virgin Islands"
+  ],
+  "VN": [
+    "Вьетнам",
+    "Vietnamas",
+    "Wietnam",
+    "Vietnam"
+  ],
+  "VU": [
+    "Вануату",
+    "Vanuatu",
+    "Vanuatu",
+    "Vanuatu"
+  ],
+  "WF": [
+    "Уоллис и Футуна",
+    "Volisas ir Futūna",
+    "Wallis i Futuna",
+    "Wallis & Futuna"
+  ],
+  "WS": [
+    "Самоа",
+    "Samoa",
+    "Samoa",
+    "Samoa"
+  ],
+  "YE": [
+    "Йемен",
+    "Jemenas",
+    "Jemen",
+    "Yemen"
+  ],
+  "YT": [
+    "Майотта",
+    "Majotas",
+    "Majotta",
+    "Mayotte"
+  ],
+  "ZA": [
+    "Южно-Африканская Республика",
+    "Pietų Afrika",
+    "Republika Południowej Afryki",
+    "South Africa"
+  ],
+  "ZM": [
+    "Замбия",
+    "Zambija",
+    "Zambia",
+    "Zambia"
+  ],
+  "ZW": [
+    "Зимбабве",
+    "Zimbabvė",
+    "Zimbabwe",
+    "Zimbabwe"
+  ]
+}

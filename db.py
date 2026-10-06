@@ -58,6 +58,9 @@ def seed(conn):
     insert(conn,'sites',dict(name='Berlin Plant',country='Германия',city='Берлин',timezone='Europe/Berlin',address='Industriepark, Berlin'))
     insert(conn,'projects',dict(name='Data Center — Стокгольм',site_id=1,start='2026-01-01',end='2027-12-31',notes='Монтаж инженерных систем дата-центра.'))
     insert(conn,'projects',dict(name='Производственный комплекс — Берлин',site_id=2,start='2026-01-01',end='2027-12-31',notes='Отдельный проект для проверки прав доступа.'))
+    if 'address' in {column['name'] for column in conn.execute('PRAGMA table_info(projects)')}:
+        conn.execute("UPDATE projects SET address='Kista, Stockholm',country='SE' WHERE id=1")
+        conn.execute("UPDATE projects SET address='Industriepark, Berlin',country='DE' WHERE id=2")
     conn.execute('INSERT INTO project_managers VALUES(1,2)')
     conn.execute('INSERT INTO project_managers VALUES(2,3)')
     names=[('Jonas','Kazlauskas','Электромонтажник'),('Mantas','Petrauskas','Сварщик'),('Tomas','Jankauskas','Монтажник'),('Darius','Stankevičius','Электромонтажник'),('Andrius','Vasiliauskas','Инженер'),('Mindaugas','Žukauskas','Сварщик'),('Paulius','Butkus','Монтажник'),('Lukas','Balčiūnas','Электромонтажник'),('Vytautas','Savickas','Инженер'),('Giedrius','Kavaliauskas','Монтажник')]
@@ -76,7 +79,7 @@ def seed(conn):
                 insert(conn,'periods',{**p,'start':'2026-10-12','end':'2026-10-16','kind':'sick','manual':1,'notes':'Больничный: ручное исключение.'})
                 p={**p,'start':'2026-10-17'}
             insert(conn,'periods',p)
-        insert(conn,'events',dict(project_id=1,employee_id=i,date=f'2026-10-{(i*3)%28+1:02}',time='09:30',timezone='Europe/Stockholm',kind='return' if i%2==0 else 'outbound',route='ARN → VNO' if i%2==0 else 'VNO → ARN',flight=f'SK{1700+i}',notes='Время указано в часовом поясе проекта.'))
+        insert(conn,'events',dict(project_id=1,employee_id=i,date=f'2026-10-{(i*3)%28+1:02}',time='09:30',timezone='Europe/Stockholm',kind='return' if i%2==0 else 'outbound',route='ARN → VNO' if i%2==0 else 'VNO → ARN',flight=f'SK{1700+i}',notes='Время поездки указано вручную.'))
     insert(conn,'employees',dict(first_name='Rokas',last_name='Jonauskas',specialty='Инженер',contact='demo-berlin@example.com'))
     insert(conn,'assignments',dict(project_id=2,employee_id=11,start='2026-01-01',end='2027-12-31'))
     for p in generate_cycle(2,11,'2026-09-01','2027-12-31'):insert(conn,'periods',p)
