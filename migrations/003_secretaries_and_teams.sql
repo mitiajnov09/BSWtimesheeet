@@ -1,0 +1,13 @@
+PRAGMA foreign_keys=OFF;
+BEGIN IMMEDIATE;
+CREATE TABLE users_new(id INTEGER PRIMARY KEY, username TEXT UNIQUE NOT NULL, name TEXT NOT NULL, password_hash TEXT NOT NULL, role TEXT NOT NULL CHECK(role IN ('admin','manager','secretary')), active INTEGER NOT NULL DEFAULT 1, version INTEGER NOT NULL DEFAULT 1);
+INSERT INTO users_new SELECT * FROM users;
+DROP TABLE users;
+ALTER TABLE users_new RENAME TO users;
+CREATE TABLE teams(id INTEGER PRIMARY KEY, project_id INTEGER NOT NULL REFERENCES projects(id), name TEXT NOT NULL, version INTEGER NOT NULL DEFAULT 1, UNIQUE(project_id,name), UNIQUE(id,project_id));
+CREATE TABLE team_members(id INTEGER PRIMARY KEY, project_id INTEGER NOT NULL REFERENCES projects(id), employee_id INTEGER NOT NULL REFERENCES employees(id), team_id INTEGER, version INTEGER NOT NULL DEFAULT 1, UNIQUE(project_id,employee_id), FOREIGN KEY(team_id,project_id) REFERENCES teams(id,project_id));
+CREATE INDEX team_project ON teams(project_id);
+CREATE INDEX team_member_project ON team_members(project_id,team_id);
+INSERT INTO schema_migrations(version) VALUES(3);
+COMMIT;
+PRAGMA foreign_keys=ON;

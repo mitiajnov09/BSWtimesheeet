@@ -1,0 +1,18 @@
+PRAGMA foreign_keys=ON;
+CREATE TABLE IF NOT EXISTS schema_migrations(version INTEGER PRIMARY KEY, applied_at TEXT DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE IF NOT EXISTS users(id INTEGER PRIMARY KEY, username TEXT UNIQUE NOT NULL, name TEXT NOT NULL, password_hash TEXT NOT NULL, role TEXT NOT NULL CHECK(role IN ('admin','manager')), active INTEGER NOT NULL DEFAULT 1, version INTEGER NOT NULL DEFAULT 1);
+CREATE TABLE IF NOT EXISTS sessions(token_hash TEXT PRIMARY KEY, user_id INTEGER NOT NULL REFERENCES users(id), csrf TEXT NOT NULL, expires INTEGER NOT NULL);
+CREATE TABLE IF NOT EXISTS sites(id INTEGER PRIMARY KEY, name TEXT NOT NULL, country TEXT NOT NULL, city TEXT NOT NULL, timezone TEXT NOT NULL, address TEXT NOT NULL DEFAULT '', version INTEGER NOT NULL DEFAULT 1);
+CREATE TABLE IF NOT EXISTS projects(id INTEGER PRIMARY KEY, name TEXT NOT NULL, site_id INTEGER NOT NULL REFERENCES sites(id), start TEXT NOT NULL, end TEXT NOT NULL, status TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active','archived')), notes TEXT NOT NULL DEFAULT '', version INTEGER NOT NULL DEFAULT 1);
+CREATE TABLE IF NOT EXISTS project_managers(project_id INTEGER NOT NULL REFERENCES projects(id), user_id INTEGER NOT NULL REFERENCES users(id), PRIMARY KEY(project_id,user_id));
+CREATE TABLE IF NOT EXISTS employees(id INTEGER PRIMARY KEY, first_name TEXT NOT NULL, last_name TEXT NOT NULL, specialty TEXT NOT NULL, contact TEXT NOT NULL DEFAULT '', status TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active','archived')), notes TEXT NOT NULL DEFAULT '', version INTEGER NOT NULL DEFAULT 1, schedule_version INTEGER NOT NULL DEFAULT 1);
+CREATE TABLE IF NOT EXISTS assignments(id INTEGER PRIMARY KEY, project_id INTEGER NOT NULL REFERENCES projects(id), employee_id INTEGER NOT NULL REFERENCES employees(id), start TEXT NOT NULL, end TEXT NOT NULL, version INTEGER NOT NULL DEFAULT 1);
+CREATE TABLE IF NOT EXISTS periods(id INTEGER PRIMARY KEY, project_id INTEGER NOT NULL REFERENCES projects(id), employee_id INTEGER NOT NULL REFERENCES employees(id), start TEXT NOT NULL, end TEXT NOT NULL, kind TEXT NOT NULL CHECK(kind IN ('work','rest','vacation','sick')), manual INTEGER NOT NULL DEFAULT 0, notes TEXT NOT NULL DEFAULT '', version INTEGER NOT NULL DEFAULT 1);
+CREATE TABLE IF NOT EXISTS events(id INTEGER PRIMARY KEY, project_id INTEGER NOT NULL REFERENCES projects(id), employee_id INTEGER NOT NULL REFERENCES employees(id), date TEXT NOT NULL, time TEXT NOT NULL DEFAULT '', timezone TEXT NOT NULL, kind TEXT NOT NULL CHECK(kind IN ('outbound','return','arrival','departure','note')), route TEXT NOT NULL DEFAULT '', flight TEXT NOT NULL DEFAULT '', notes TEXT NOT NULL DEFAULT '', version INTEGER NOT NULL DEFAULT 1);
+CREATE TABLE IF NOT EXISTS audit(id INTEGER PRIMARY KEY, user_id INTEGER REFERENCES users(id), project_id INTEGER REFERENCES projects(id), action TEXT NOT NULL, entity TEXT NOT NULL, entity_id INTEGER, before_json TEXT, after_json TEXT, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE IF NOT EXISTS login_attempts(key TEXT PRIMARY KEY, attempts INTEGER NOT NULL, reset_at INTEGER NOT NULL);
+CREATE INDEX IF NOT EXISTS period_range ON periods(employee_id,start,end);
+CREATE INDEX IF NOT EXISTS assignment_range ON assignments(employee_id,start,end);
+CREATE INDEX IF NOT EXISTS event_range ON events(project_id,date);
+CREATE INDEX IF NOT EXISTS audit_project ON audit(project_id,id);
+INSERT OR IGNORE INTO schema_migrations(version) VALUES(1);
