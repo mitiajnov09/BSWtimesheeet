@@ -81,7 +81,7 @@ class DatabaseTests(unittest.TestCase):
         self.assertEqual(periods,service.employee_periods(self.conn,1));self.assertEqual(assignments,service.employee_assignments(self.conn,1))
     def test_localized_layered_pdf(self):
         service.save_period(self.conn,self.manager,dict(employee_id=1,project_id=1,schedule_version=1,kind='sick',start='2026-10-01',end='2026-10-03'))
-        for language,label,sick in [('lt','Spalis','Nedarbingumas'),('pl','Październik','Zwolnienie lekarskie')]:
+        for language,label,sick in [('lt','Spalis','Nedarbingumas'),('pl','Październik','Zwolnienie lekarskie'),('en','October','Sick leave')]:
             pdf=export(self.conn,self.manager,dict(project_id=1,start='2026-10-01',end='2026-10-31',language=language,employee_ids=[1],include_notes=False,include_events=False))
             text=''.join(p.extract_text() for p in PdfReader(io.BytesIO(pdf)).pages)
             self.assertIn(label,text);self.assertIn(sick,text)

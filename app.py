@@ -12,6 +12,8 @@ import feedback
 import photos
 from pdf_export import export
 
+APP_VERSION=(ROOT/'VERSION').read_text().strip()
+
 def load_environment():
     path=ROOT/'.env'
     if path.exists():
@@ -58,6 +60,7 @@ class Handler(BaseHTTPRequestHandler):
                 if not target.is_relative_to(ROOT/'static') or not target.is_file():raise Problem('Страница не найдена.',404)
                 types={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.svg':'image/svg+xml','.webp':'image/webp'}
                 return self.respond(200,target.read_bytes(),types.get(target.suffix,'application/octet-stream'))
+            if path=='/api/version' and method=='GET':return self.respond(200,{'version':APP_VERSION})
             conn=connect();data=self.read_json() if method in ('POST','DELETE') else {}
             if method!='GET':
                 origin=self.headers.get('Origin')

@@ -3,6 +3,7 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt && useradd --uid 10001 --create-home rotations
 COPY app.py db.py domain.py service.py feedback.py photos.py pdf_export.py backup.py restore.py ./
+COPY VERSION ./
 COPY migrations/ migrations/
 COPY static/ static/
 COPY fonts/ fonts/

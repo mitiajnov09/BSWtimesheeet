@@ -1,1621 +1,2235 @@
 'use strict';
 // Only interface strings are translated. Names, notes and other saved data stay intact.
-const LANGUAGE_OPTIONS=[['ru','Русский'],['lt','Lietuvių'],['pl','Polski']];
+const LANGUAGE_OPTIONS=[['lt','🇱🇹 LT'],['pl','🇵🇱 PL'],['en','🇬🇧 EN'],['ru','🇷🇺 RU']];
 let language=localStorage.getItem('rotations-language')||'ru';
 if(!LANGUAGE_OPTIONS.some(([code])=>code===language))language='ru';
 const UI_TRANSLATIONS={
-  "Фотография работника": ["Darbuotojo nuotrauka", "Zdjęcie pracownika"],
-  "Убрать фотографию": ["Pašalinti nuotrauką", "Usuń zdjęcie"],
-  "Включить фотографии работников": ["Įtraukti darbuotojų nuotraukas", "Dołącz zdjęcia pracowników"],
-  "Прикрепите корректную фотографию PNG, JPEG или WebP.": ["Pridėkite tinkamą PNG, JPEG arba WebP nuotrauką.", "Dołącz poprawne zdjęcie PNG, JPEG lub WebP."],
-  "Фотография не должна превышать 4 МБ.": ["Nuotrauka neturi viršyti 4 MB.", "Zdjęcie nie może przekraczać 4 MB."],
-  "Не удалось прочитать фотографию.": ["Nepavyko perskaityti nuotraukos.", "Nie udało się odczytać zdjęcia."],
-  "Фотография не найдена.": ["Nuotrauka nerasta.", "Nie znaleziono zdjęcia."],
-  "Нет доступа к работнику.": ["Nėra prieigos prie darbuotojo.", "Brak dostępu do pracownika."],
-  "Выберите экспорт с фотографиями или без.": ["Pasirinkite eksportą su nuotraukomis arba be jų.", "Wybierz eksport ze zdjęciami lub bez."],
-"Отзывы":["Atsiliepimai", "Opinie"],
-"Сообщить об ошибке или предложить улучшение":["Pranešti apie klaidą arba pasiūlyti patobulinimą", "Zgłoś błąd lub zaproponuj ulepszenie"],
-"Обратная связь":["Atsiliepimas", "Opinia"],
-"Нашли ошибку или есть идея для улучшения?":["Radote klaidą ar turite idėją, kaip patobulinti?", "Znalazłeś błąd lub masz pomysł na ulepszenie?"],
-"Тип сообщения":["Pranešimo tipas", "Typ wiadomości"],
-"Ошибка":["Klaida", "Błąd"],
-"Предложение":["Pasiūlymas", "Sugestia"],
-"Ваше сообщение":["Jūsų pranešimas", "Twoja wiadomość"],
-"Опишите проблему или предложение…":["Aprašykite problemą arba pasiūlymą…", "Opisz problem lub sugestię…"],
-"Скриншот (необязательно)":["Ekrano kopija (nebūtina)", "Zrzut ekranu (opcjonalnie)"],
-"Скриншот":["Ekrano kopija", "Zrzut ekranu"],
-"PNG, JPEG или WebP · до 4 МБ":["PNG, JPEG arba WebP · iki 4 MB", "PNG, JPEG lub WebP · do 4 MB"],
-"Сообщение увидит только администратор.":["Pranešimą matys tik administratorius.", "Wiadomość zobaczy tylko administrator."],
-"Отправить":["Siųsti", "Wyślij"],
-"Спасибо! Отзыв отправлен администратору.":["Ačiū! Atsiliepimas išsiųstas administratoriui.", "Dziękujemy! Opinia została wysłana administratorowi."],
-"Убрать скриншот":["Pašalinti ekrano kopiją", "Usuń zrzut ekranu"],
-"Ошибки и предложения пользователей · только для администратора":["Naudotojų klaidos ir pasiūlymai · tik administratoriui", "Błędy i sugestie użytkowników · tylko dla administratora"],
-"Статус отзыва":["Atsiliepimo būsena", "Status opinii"],
-"Все отзывы":["Visi atsiliepimai", "Wszystkie opinie"],
-"Новые":["Nauji", "Nowe"],
-"Просмотренные":["Peržiūrėti", "Przejrzane"],
-"Новый":["Naujas", "Nowy"],
-"Просмотрен":["Peržiūrėtas", "Przejrzany"],
-"Отзывов пока нет.":["Atsiliepimų dar nėra.", "Nie ma jeszcze opinii."],
-"Отметить просмотренным":["Pažymėti kaip peržiūrėtą", "Oznacz jako przejrzane"],
-"Вернуть в новые":["Grąžinti į naujus", "Przywróć do nowych"],
-"Прикрепите корректный скриншот PNG, JPEG или WebP.":["Pridėkite tinkamą PNG, JPEG arba WebP ekrano kopiją.", "Dołącz poprawny zrzut ekranu PNG, JPEG lub WebP."],
-"Скриншот не должен превышать 4 МБ.":["Ekrano kopija neturi viršyti 4 MB.", "Zrzut ekranu nie może przekraczać 4 MB."],
-"Не удалось прочитать скриншот.":["Nepavyko perskaityti ekrano kopijos.", "Nie udało się odczytać zrzutu ekranu."],
-"Введите сообщение от 1 до 5000 символов.":["Įveskite pranešimą nuo 1 iki 5000 simbolių.", "Wpisz wiadomość od 1 do 5000 znaków."],
-"Выберите ошибку или предложение.":["Pasirinkite klaidą arba pasiūlymą.", "Wybierz błąd lub sugestię."],
-"Неизвестный статус отзыва.":["Nežinoma atsiliepimo būsena.", "Nieznany status opinii."],
-"Скриншот не найден.":["Ekrano kopija nerasta.", "Nie znaleziono zrzutu ekranu."],
-"Некорректный скриншот.":["Netinkama ekrano kopija.", "Nieprawidłowy zrzut ekranu."],
-  "Изменить начало": ["Keisti pradžią", "Zmień początek"],
-  "Изменить окончание": ["Keisti pabaigą", "Zmień koniec"],
-  "Поездка на объект": ["Kelionė į objektą", "Podróż na obiekt"],
-  "Обратная поездка": ["Kelionė atgal", "Podróż powrotna"],
-  "Поездка": ["Kelionė", "Podróż"],
-  "Добавить поездку или событие": ["Pridėti kelionę arba įvykį", "Dodaj podróż lub wydarzenie"],
-  "Самолёт": ["Lėktuvas", "Samolot"],
-  "Машина": ["Automobilis", "Samochód"],
-  "Паром": ["Keltas", "Prom"],
-  "Транспорт": ["Transportas", "Transport"],
-  "Неизвестный вид транспорта.": ["Nežinoma transporto rūšis.", "Nieznany rodzaj transportu."],
+  "Фотография работника": [
+    "Darbuotojo nuotrauka",
+    "Zdjęcie pracownika",
+    "Employee photo"
+  ],
+  "Убрать фотографию": [
+    "Pašalinti nuotrauką",
+    "Usuń zdjęcie",
+    "Remove photo"
+  ],
+  "Включить фотографии работников": [
+    "Įtraukti darbuotojų nuotraukas",
+    "Dołącz zdjęcia pracowników",
+    "Include employee photos"
+  ],
+  "Прикрепите корректную фотографию PNG, JPEG или WebP.": [
+    "Pridėkite tinkamą PNG, JPEG arba WebP nuotrauką.",
+    "Dołącz poprawne zdjęcie PNG, JPEG lub WebP.",
+    "Attach a valid PNG, JPEG or WebP photo."
+  ],
+  "Фотография не должна превышать 4 МБ.": [
+    "Nuotrauka neturi viršyti 4 MB.",
+    "Zdjęcie nie może przekraczać 4 MB.",
+    "The photo must not exceed 4 MB."
+  ],
+  "Не удалось прочитать фотографию.": [
+    "Nepavyko perskaityti nuotraukos.",
+    "Nie udało się odczytać zdjęcia.",
+    "Could not read the photo."
+  ],
+  "Фотография не найдена.": [
+    "Nuotrauka nerasta.",
+    "Nie znaleziono zdjęcia.",
+    "Photo not found."
+  ],
+  "Нет доступа к работнику.": [
+    "Nėra prieigos prie darbuotojo.",
+    "Brak dostępu do pracownika.",
+    "You do not have access to this employee."
+  ],
+  "Выберите экспорт с фотографиями или без.": [
+    "Pasirinkite eksportą su nuotraukomis arba be jų.",
+    "Wybierz eksport ze zdjęciami lub bez.",
+    "Choose whether to export with or without photos."
+  ],
+  "Отзывы": [
+    "Atsiliepimai",
+    "Opinie",
+    "Feedback"
+  ],
+  "Сообщить об ошибке или предложить улучшение": [
+    "Pranešti apie klaidą arba pasiūlyti patobulinimą",
+    "Zgłoś błąd lub zaproponuj ulepszenie",
+    "Report a bug or suggest an improvement"
+  ],
+  "Обратная связь": [
+    "Atsiliepimas",
+    "Opinia",
+    "Feedback"
+  ],
+  "Нашли ошибку или есть идея для улучшения?": [
+    "Radote klaidą ar turite idėją, kaip patobulinti?",
+    "Znalazłeś błąd lub masz pomysł na ulepszenie?",
+    "Found a bug or have an idea for improvement?"
+  ],
+  "Тип сообщения": [
+    "Pranešimo tipas",
+    "Typ wiadomości",
+    "Message type"
+  ],
+  "Ошибка": [
+    "Klaida",
+    "Błąd",
+    "Bug"
+  ],
+  "Предложение": [
+    "Pasiūlymas",
+    "Sugestia",
+    "Suggestion"
+  ],
+  "Ваше сообщение": [
+    "Jūsų pranešimas",
+    "Twoja wiadomość",
+    "Your message"
+  ],
+  "Опишите проблему или предложение…": [
+    "Aprašykite problemą arba pasiūlymą…",
+    "Opisz problem lub sugestię…",
+    "Describe the issue or suggestion…"
+  ],
+  "Скриншот (необязательно)": [
+    "Ekrano kopija (nebūtina)",
+    "Zrzut ekranu (opcjonalnie)",
+    "Screenshot (optional)"
+  ],
+  "Скриншот": [
+    "Ekrano kopija",
+    "Zrzut ekranu",
+    "Screenshot"
+  ],
+  "PNG, JPEG или WebP · до 4 МБ": [
+    "PNG, JPEG arba WebP · iki 4 MB",
+    "PNG, JPEG lub WebP · do 4 MB",
+    "PNG, JPEG or WebP · up to 4 MB"
+  ],
+  "Сообщение увидит только администратор.": [
+    "Pranešimą matys tik administratorius.",
+    "Wiadomość zobaczy tylko administrator.",
+    "Only the administrator will see your message."
+  ],
+  "Отправить": [
+    "Siųsti",
+    "Wyślij",
+    "Send"
+  ],
+  "Спасибо! Отзыв отправлен администратору.": [
+    "Ačiū! Atsiliepimas išsiųstas administratoriui.",
+    "Dziękujemy! Opinia została wysłana administratorowi.",
+    "Thank you! Your feedback has been sent to the administrator."
+  ],
+  "Убрать скриншот": [
+    "Pašalinti ekrano kopiją",
+    "Usuń zrzut ekranu",
+    "Remove screenshot"
+  ],
+  "Ошибки и предложения пользователей · только для администратора": [
+    "Naudotojų klaidos ir pasiūlymai · tik administratoriui",
+    "Błędy i sugestie użytkowników · tylko dla administratora",
+    "User bugs and suggestions · administrators only"
+  ],
+  "Статус отзыва": [
+    "Atsiliepimo būsena",
+    "Status opinii",
+    "Feedback status"
+  ],
+  "Все отзывы": [
+    "Visi atsiliepimai",
+    "Wszystkie opinie",
+    "All feedback"
+  ],
+  "Новые": [
+    "Nauji",
+    "Nowe",
+    "New"
+  ],
+  "Просмотренные": [
+    "Peržiūrėti",
+    "Przejrzane",
+    "Reviewed"
+  ],
+  "Новый": [
+    "Naujas",
+    "Nowy",
+    "New"
+  ],
+  "Просмотрен": [
+    "Peržiūrėtas",
+    "Przejrzany",
+    "Reviewed"
+  ],
+  "Отзывов пока нет.": [
+    "Atsiliepimų dar nėra.",
+    "Nie ma jeszcze opinii.",
+    "No feedback yet."
+  ],
+  "Отметить просмотренным": [
+    "Pažymėti kaip peržiūrėtą",
+    "Oznacz jako przejrzane",
+    "Mark as reviewed"
+  ],
+  "Вернуть в новые": [
+    "Grąžinti į naujus",
+    "Przywróć do nowych",
+    "Mark as new"
+  ],
+  "Прикрепите корректный скриншот PNG, JPEG или WebP.": [
+    "Pridėkite tinkamą PNG, JPEG arba WebP ekrano kopiją.",
+    "Dołącz poprawny zrzut ekranu PNG, JPEG lub WebP.",
+    "Attach a valid PNG, JPEG or WebP screenshot."
+  ],
+  "Скриншот не должен превышать 4 МБ.": [
+    "Ekrano kopija neturi viršyti 4 MB.",
+    "Zrzut ekranu nie może przekraczać 4 MB.",
+    "The screenshot must not exceed 4 MB."
+  ],
+  "Не удалось прочитать скриншот.": [
+    "Nepavyko perskaityti ekrano kopijos.",
+    "Nie udało się odczytać zrzutu ekranu.",
+    "Could not read the screenshot."
+  ],
+  "Введите сообщение от 1 до 5000 символов.": [
+    "Įveskite pranešimą nuo 1 iki 5000 simbolių.",
+    "Wpisz wiadomość od 1 do 5000 znaków.",
+    "Enter a message between 1 and 5000 characters."
+  ],
+  "Выберите ошибку или предложение.": [
+    "Pasirinkite klaidą arba pasiūlymą.",
+    "Wybierz błąd lub sugestię.",
+    "Choose bug or suggestion."
+  ],
+  "Неизвестный статус отзыва.": [
+    "Nežinoma atsiliepimo būsena.",
+    "Nieznany status opinii.",
+    "Unknown feedback status."
+  ],
+  "Скриншот не найден.": [
+    "Ekrano kopija nerasta.",
+    "Nie znaleziono zrzutu ekranu.",
+    "Screenshot not found."
+  ],
+  "Некорректный скриншот.": [
+    "Netinkama ekrano kopija.",
+    "Nieprawidłowy zrzut ekranu.",
+    "Invalid screenshot."
+  ],
+  "Изменить начало": [
+    "Keisti pradžią",
+    "Zmień początek",
+    "Change start"
+  ],
+  "Изменить окончание": [
+    "Keisti pabaigą",
+    "Zmień koniec",
+    "Change end"
+  ],
+  "Поездка на объект": [
+    "Kelionė į objektą",
+    "Podróż na obiekt",
+    "Travel to site"
+  ],
+  "Обратная поездка": [
+    "Kelionė atgal",
+    "Podróż powrotna",
+    "Return journey"
+  ],
+  "Поездка": [
+    "Kelionė",
+    "Podróż",
+    "Travel"
+  ],
+  "Добавить поездку или событие": [
+    "Pridėti kelionę arba įvykį",
+    "Dodaj podróż lub wydarzenie",
+    "Add travel or event"
+  ],
+  "Самолёт": [
+    "Lėktuvas",
+    "Samolot",
+    "Plane"
+  ],
+  "Машина": [
+    "Automobilis",
+    "Samochód",
+    "Car"
+  ],
+  "Паром": [
+    "Keltas",
+    "Prom",
+    "Ferry"
+  ],
+  "Транспорт": [
+    "Transportas",
+    "Transport",
+    "Transport"
+  ],
+  "Неизвестный вид транспорта.": [
+    "Nežinoma transporto rūšis.",
+    "Nieznany rodzaj transportu.",
+    "Unknown transport type."
+  ],
   "Ротации": [
     "Rotacijos",
-    "Rotacje"
+    "Rotacje",
+    "Rotations"
   ],
   "Рабочее пространство": [
     "Darbo sritis",
-    "Obszar roboczy"
+    "Obszar roboczy",
+    "Workspace"
   ],
   "График ротаций": [
     "Rotacijų grafikas",
-    "Grafik rotacji"
+    "Grafik rotacji",
+    "Rotation schedule"
   ],
   "Проекты": [
     "Projektai",
-    "Projekty"
+    "Projekty",
+    "Projects"
   ],
   "Работники": [
     "Darbuotojai",
-    "Pracownicy"
+    "Pracownicy",
+    "Employees"
   ],
   "Учётные записи": [
     "Naudotojų paskyros",
-    "Konta użytkowników"
+    "Konta użytkowników",
+    "User accounts"
   ],
   "История изменений": [
     "Pakeitimų istorija",
-    "Historia zmian"
+    "Historia zmian",
+    "Change history"
   ],
   "Индивидуальные циклы": [
     "Individualūs ciklai",
-    "Indywidualne cykle"
+    "Indywidualne cykle",
+    "Individual cycles"
   ],
   "Рабочие дни и дни отдыха": [
     "Darbo ir poilsio dienos",
-    "Dni pracy i odpoczynku"
+    "Dni pracy i odpoczynku",
+    "Work days and rest days"
   ],
   "под контролем команды.": [
     "kontroliuojamos komandos.",
-    "pod kontrolą zespołu."
+    "pod kontrolą zespołu.",
+    "managed by your team."
   ],
   "Администратор": [
     "Administratorius",
+    "Administrator",
     "Administrator"
   ],
   "Руководитель проекта": [
     "Projekto vadovas",
-    "Kierownik projektu"
+    "Kierownik projektu",
+    "Project manager"
   ],
   "Руководитель": [
     "Vadovas",
-    "Kierownik"
+    "Kierownik",
+    "Manager"
   ],
   "Сменить пароль": [
     "Keisti slaptažodį",
-    "Zmień hasło"
+    "Zmień hasło",
+    "Change password"
   ],
   "Выйти": [
     "Atsijungti",
-    "Wyloguj"
+    "Wyloguj",
+    "Sign out"
   ],
   "Данные сохранены": [
     "Duomenys išsaugoti",
-    "Dane zapisane"
+    "Dane zapisane",
+    "Data saved"
   ],
   "Обновить данные": [
     "Atnaujinti duomenis",
-    "Odśwież dane"
+    "Odśwież dane",
+    "Refresh data"
   ],
   "Данные обновлены": [
     "Duomenys atnaujinti",
-    "Dane odświeżone"
+    "Dane odświeżone",
+    "Data refreshed"
   ],
   "Изменения сохранены": [
     "Pakeitimai išsaugoti",
-    "Zmiany zapisane"
+    "Zmiany zapisane",
+    "Changes saved"
   ],
   "Планируйте работу и отдых вашей команды": [
     "Planuokite komandos darbą ir poilsį",
-    "Planuj pracę i odpoczynek zespołu"
+    "Planuj pracę i odpoczynek zespołu",
+    "Plan your team's work and rest"
   ],
   "Экспорт в PDF": [
     "Eksportuoti į PDF",
-    "Eksport do PDF"
+    "Eksport do PDF",
+    "Export to PDF"
   ],
   "Запланировать": [
     "Planuoti",
-    "Zaplanuj"
+    "Zaplanuj",
+    "Plan rotation"
   ],
   "Активный проект": [
     "Aktyvus projektas",
-    "Aktywny projekt"
+    "Aktywny projekt",
+    "Active project"
   ],
   "В архиве": [
     "Archyve",
-    "W archiwum"
+    "W archiwum",
+    "Archived"
   ],
   "Неактивный": [
     "Neaktyvus",
-    "Nieaktywny"
+    "Nieaktywny",
+    "Inactive"
   ],
   "Неактивные работники": [
     "Neaktyvūs darbuotojai",
-    "Nieaktywni pracownicy"
+    "Nieaktywni pracownicy",
+    "Inactive employees"
   ],
   "Всего работников": [
     "Darbuotojų skaičius",
-    "Liczba pracowników"
+    "Liczba pracowników",
+    "Total employees"
   ],
   "в проекте": [
     "projekte",
-    "w projekcie"
+    "w projekcie",
+    "in the project"
   ],
   "На объекте сегодня": [
     "Šiandien objekte",
-    "Dzisiaj na obiekcie"
+    "Dzisiaj na obiekcie",
+    "On site today"
   ],
   "работают": [
     "dirba",
-    "pracują"
+    "pracują",
+    "working"
   ],
   "Отдыхают сегодня": [
     "Šiandien ilsisi",
-    "Dzisiaj odpoczywają"
+    "Dzisiaj odpoczywają",
+    "Resting today"
   ],
   "работников": [
     "darbuotojų",
-    "pracowników"
+    "pracowników",
+    "employees"
   ],
   "Ближайшие перелёты": [
     "Artimiausi skrydžiai",
-    "Najbliższe loty"
+    "Najbliższe loty",
+    "Upcoming trips"
   ],
   "за 7 дней": [
     "per 7 dienas",
-    "w ciągu 7 dni"
+    "w ciągu 7 dni",
+    "in 7 days"
   ],
   "Предыдущий период": [
     "Ankstesnis laikotarpis",
-    "Poprzedni okres"
+    "Poprzedni okres",
+    "Previous period"
   ],
   "Следующий период": [
     "Kitas laikotarpis",
-    "Następny okres"
+    "Następny okres",
+    "Next period"
   ],
   "Сегодня": [
     "Šiandien",
-    "Dzisiaj"
+    "Dzisiaj",
+    "Today"
   ],
   "Выбрать период": [
     "Pasirinkti laikotarpį",
-    "Wybierz okres"
+    "Wybierz okres",
+    "Select period"
   ],
   "Масштаб": [
     "Mastelis",
-    "Skala"
+    "Skala",
+    "Scale"
   ],
   "Месяц": [
     "Mėnuo",
-    "Miesiąc"
+    "Miesiąc",
+    "Month"
   ],
   "Квартал": [
     "Ketvirtis",
-    "Kwartał"
+    "Kwartał",
+    "Quarter"
   ],
   "Год": [
     "Metai",
-    "Rok"
+    "Rok",
+    "Year"
   ],
   "квартал": [
     "ketvirtis",
-    "kwartał"
+    "kwartał",
+    "quarter"
   ],
   "год": [
     "metai",
-    "rok"
+    "rok",
+    "year"
   ],
   "Найти работника…": [
     "Ieškoti darbuotojo…",
-    "Znajdź pracownika…"
+    "Znajdź pracownika…",
+    "Find an employee…"
   ],
   "Поиск работника": [
     "Darbuotojo paieška",
-    "Wyszukaj pracownika"
+    "Wyszukaj pracownika",
+    "Employee search"
   ],
   "Все специальности": [
     "Visos specialybės",
-    "Wszystkie specjalności"
+    "Wszystkie specjalności",
+    "All specialties"
   ],
   "Фильтр по специальности": [
     "Filtruoti pagal specialybę",
-    "Filtr specjalności"
+    "Filtr specjalności",
+    "Filter by specialty"
   ],
   "Фильтр по статусу": [
     "Filtruoti pagal būseną",
-    "Filtr statusu"
+    "Filtr statusu",
+    "Filter by status"
   ],
   "Активные работники": [
     "Aktyvūs darbuotojai",
-    "Aktywni pracownicy"
+    "Aktywni pracownicy",
+    "Active employees"
   ],
   "Все статусы": [
     "Visos būsenos",
-    "Wszystkie statusy"
+    "Wszystkie statusy",
+    "All statuses"
   ],
   "Календарный график, прокручивается горизонтально": [
     "Kalendoriaus grafikas, slenkamas horizontaliai",
-    "Grafik kalendarza, przewijany poziomo"
+    "Grafik kalendarza, przewijany poziomo",
+    "Calendar schedule, scroll horizontally"
   ],
   "РАБОТНИК": [
     "DARBUOTOJAS",
-    "PRACOWNIK"
+    "PRACOWNIK",
+    "EMPLOYEE"
   ],
   "НЕДЕЛЯ": [
     "SAVAITĖ",
-    "TYDZIEŃ"
+    "TYDZIEŃ",
+    "WEEK"
   ],
   "Работа": [
     "Darbas",
-    "Praca"
+    "Praca",
+    "Work"
   ],
   "Отдых": [
     "Poilsis",
-    "Odpoczynek"
+    "Odpoczynek",
+    "Rest"
   ],
   "Отпуск": [
     "Atostogos",
-    "Urlop"
+    "Urlop",
+    "Vacation"
   ],
   "Больничный": [
     "Nedarbingumas",
-    "Zwolnienie lekarskie"
+    "Zwolnienie lekarskie",
+    "Sick leave"
   ],
   "Ручная правка": [
     "Rankinis pakeitimas",
-    "Zmiana ręczna"
+    "Zmiana ręczna",
+    "Manual change"
   ],
   "Перелёт": [
     "Skrydis",
-    "Lot"
+    "Lot",
+    "Flight"
   ],
   "дней": [
     "dienų",
-    "dni"
+    "dni",
+    "days"
   ],
   "Действия": [
     "Veiksmai",
-    "Działania"
+    "Działania",
+    "Actions"
   ],
   "Нет работников, соответствующих фильтрам.": [
     "Nėra filtrus atitinkančių darbuotojų.",
-    "Brak pracowników spełniających filtry."
+    "Brak pracowników spełniających filtry.",
+    "No employees match the filters."
   ],
   "Перетащите статус или перелёт из легенды на нужный день работника. При наложении появится дополнительный слой.": [
     "Nuvilkite būseną arba skrydį iš legendos į reikiamą darbuotojo dieną. Persidengus bus sukurtas papildomas sluoksnis.",
-    "Przeciągnij status lub lot z legendy na wybrany dzień pracownika. Przy nakładaniu powstanie dodatkowa warstwa."
+    "Przeciągnij status lub lot z legendy na wybrany dzień pracownika. Przy nakładaniu powstanie dodatkowa warstwa.",
+    "Drag a status or trip from the legend onto an employee's day. Overlapping entries create an additional layer."
   ],
   "Перетащите полосу, чтобы изменить даты. Потяните за край, чтобы изменить длительность. Сб и Вс выделены фоном.": [
     "Nuvilkite juostą, kad pakeistumėte datas. Traukite kraštą, kad pakeistumėte trukmę. Šeštadieniai ir sekmadieniai pažymėti fonu.",
-    "Przeciągnij pasek, aby zmienić daty. Pociągnij krawędź, aby zmienić długość. Soboty i niedziele wyróżniono tłem."
+    "Przeciągnij pasek, aby zmienić daty. Pociągnij krawędź, aby zmienić długość. Soboty i niedziele wyróżniono tłem.",
+    "Drag a bar to change dates. Drag an edge to change its duration. Saturdays and Sundays are shaded."
   ],
   "Январь": [
     "Sausis",
-    "Styczeń"
+    "Styczeń",
+    "January"
   ],
   "Февраль": [
     "Vasaris",
-    "Luty"
+    "Luty",
+    "February"
   ],
   "Март": [
     "Kovas",
-    "Marzec"
+    "Marzec",
+    "March"
   ],
   "Апрель": [
     "Balandis",
-    "Kwiecień"
+    "Kwiecień",
+    "April"
   ],
   "Май": [
     "Gegužė",
-    "Maj"
+    "Maj",
+    "May"
   ],
   "Июнь": [
     "Birželis",
-    "Czerwiec"
+    "Czerwiec",
+    "June"
   ],
   "Июль": [
     "Liepa",
-    "Lipiec"
+    "Lipiec",
+    "July"
   ],
   "Август": [
     "Rugpjūtis",
-    "Sierpień"
+    "Sierpień",
+    "August"
   ],
   "Сентябрь": [
     "Rugsėjis",
-    "Wrzesień"
+    "Wrzesień",
+    "September"
   ],
   "Октябрь": [
     "Spalis",
-    "Październik"
+    "Październik",
+    "October"
   ],
   "Ноябрь": [
     "Lapkritis",
-    "Listopad"
+    "Listopad",
+    "November"
   ],
   "Декабрь": [
     "Gruodis",
-    "Grudzień"
+    "Grudzień",
+    "December"
   ],
   "Вс": [
     "Sk",
-    "Nd"
+    "Nd",
+    "Sun"
   ],
   "Пн": [
     "Pr",
-    "Pn"
+    "Pn",
+    "Mon"
   ],
   "Вт": [
     "An",
-    "Wt"
+    "Wt",
+    "Tue"
   ],
   "Ср": [
     "Tr",
-    "Śr"
+    "Śr",
+    "Wed"
   ],
   "Чт": [
     "Kt",
-    "Cz"
+    "Cz",
+    "Thu"
   ],
   "Пт": [
     "Pn",
-    "Pt"
+    "Pt",
+    "Fri"
   ],
   "Сб": [
     "Št",
-    "Sb"
+    "Sb",
+    "Sat"
   ],
   "Каждый человек.": [
     "Kiekvienas žmogus.",
-    "Każdy człowiek."
+    "Każdy człowiek.",
+    "Every person."
   ],
   "Каждая ротация.": [
     "Kiekviena rotacija.",
-    "Każda rotacja."
+    "Każda rotacja.",
+    "Every rotation."
   ],
   "В одном графике.": [
     "Viename grafike.",
-    "W jednym grafiku."
+    "W jednym grafiku.",
+    "In one schedule."
   ],
   "Работа, отдых и перелёты вашей команды — с учётом проектов и индивидуальных циклов.": [
     "Komandos darbas, poilsis ir skrydžiai pagal projektus ir individualius ciklus.",
-    "Praca, odpoczynek i loty zespołu z uwzględnieniem projektów i indywidualnych cykli."
+    "Praca, odpoczynek i loty zespołu z uwzględnieniem projektów i indywidualnych cykli.",
+    "Your team's work, rest and travel, with projects and individual cycles."
   ],
   "Вход в систему": [
     "Prisijungimas",
-    "Logowanie"
+    "Logowanie",
+    "Sign in"
   ],
   "Планирование начинается здесь.": [
     "Planavimas prasideda čia.",
-    "Planowanie zaczyna się tutaj."
+    "Planowanie zaczyna się tutaj.",
+    "Planning starts here."
   ],
   "Логин": [
     "Prisijungimo vardas",
-    "Login"
+    "Login",
+    "Username"
   ],
   "Пароль": [
     "Slaptažodis",
-    "Hasło"
+    "Hasło",
+    "Password"
   ],
   "Ваш логин": [
     "Jūsų prisijungimo vardas",
-    "Twój login"
+    "Twój login",
+    "Your username"
   ],
   "Ваш пароль": [
     "Jūsų slaptažodis",
-    "Twoje hasło"
+    "Twoje hasło",
+    "Your password"
   ],
   "Войти": [
     "Prisijungti",
-    "Zaloguj się"
+    "Zaloguj się",
+    "Sign in"
   ],
   "Учётную запись создаёт администратор.": [
     "Paskyrą sukuria administratorius.",
-    "Konto tworzy administrator."
+    "Konto tworzy administrator.",
+    "The administrator creates your account."
   ],
   "Обратитесь к нему, если у вас ещё нет доступа.": [
     "Kreipkitės į jį, jei dar neturite prieigos.",
-    "Skontaktuj się z nim, jeśli nie masz jeszcze dostępu."
+    "Skontaktuj się z nim, jeśli nie masz jeszcze dostępu.",
+    "Contact them if you do not have access yet."
   ],
   "Пока нет доступных проектов.": [
     "Nėra prieinamų projektų.",
-    "Brak dostępnych projektów."
+    "Brak dostępnych projektów.",
+    "No projects available yet."
   ],
   "Создайте объект и проект в разделе «Проекты».": [
     "Sukurkite objektą ir projektą skiltyje „Projektai“.",
-    "Utwórz obiekt i projekt w sekcji „Projekty”."
+    "Utwórz obiekt i projekt w sekcji „Projekty”.",
+    "Create a site and project in the Projects section."
   ],
   "Открыть проекты": [
     "Atidaryti projektus",
-    "Otwórz projekty"
+    "Otwórz projekty",
+    "Open projects"
   ],
   "Закрыть": [
     "Uždaryti",
-    "Zamknij"
+    "Zamknij",
+    "Close"
   ],
   "Отмена": [
     "Atšaukti",
-    "Anuluj"
+    "Anuluj",
+    "Cancel"
   ],
   "Сохранить": [
     "Išsaugoti",
-    "Zapisz"
+    "Zapisz",
+    "Save"
   ],
   "Контакты не указаны": [
     "Kontaktai nenurodyti",
-    "Brak danych kontaktowych"
+    "Brak danych kontaktowych",
+    "No contact details"
   ],
   "Построить цикл работы и отдыха": [
     "Sukurti darbo ir poilsio ciklą",
-    "Utwórz cykl pracy i odpoczynku"
+    "Utwórz cykl pracy i odpoczynku",
+    "Build a work and rest cycle"
   ],
   "Добавить отдельный период": [
     "Pridėti atskirą laikotarpį",
-    "Dodaj osobny okres"
+    "Dodaj osobny okres",
+    "Add a single period"
   ],
   "Добавить перелёт или событие": [
     "Pridėti skrydį arba įvykį",
-    "Dodaj lot lub wydarzenie"
+    "Dodaj lot lub wydarzenie",
+    "Add travel or event"
   ],
   "Карточка работника": [
     "Darbuotojo kortelė",
-    "Karta pracownika"
+    "Karta pracownika",
+    "Employee card"
   ],
   "НАЗНАЧЕНИЯ НА ПРОЕКТ": [
     "PRISKYRIMAI PROJEKTUI",
-    "PRZYDZIAŁY DO PROJEKTU"
+    "PRZYDZIAŁY DO PROJEKTU",
+    "PROJECT ASSIGNMENTS"
   ],
   "Изменить назначение": [
     "Keisti priskyrimą",
-    "Zmień przydział"
+    "Zmień przydział",
+    "Edit assignment"
   ],
   "Запланировать ротацию": [
     "Planuoti rotaciją",
-    "Zaplanuj rotację"
+    "Zaplanuj rotację",
+    "Plan a rotation"
   ],
   "Работник": [
     "Darbuotojas",
-    "Pracownik"
+    "Pracownik",
+    "Employee"
   ],
   "Настроить цикл": [
     "Nustatyti ciklą",
-    "Ustaw cykl"
+    "Ustaw cykl",
+    "Set up cycle"
   ],
   "Цикл": [
     "Ciklas",
-    "Cykl"
+    "Cykl",
+    "Cycle"
   ],
   "6 недель работы = 42 календарных дня. 2 недели отдыха = 14 дней. Ручные исключения сохраняются.": [
     "6 darbo savaitės = 42 kalendorinės dienos. 2 poilsio savaitės = 14 dienų. Rankinės išimtys išsaugomos.",
-    "6 tygodni pracy = 42 dni kalendarzowe. 2 tygodnie odpoczynku = 14 dni. Ręczne wyjątki zostają zachowane."
+    "6 tygodni pracy = 42 dni kalendarzowe. 2 tygodnie odpoczynku = 14 dni. Ręczne wyjątki zostają zachowane.",
+    "6 work weeks = 42 calendar days. 2 rest weeks = 14 days. Manual exceptions are preserved."
   ],
   "Недель работы": [
     "Darbo savaitės",
-    "Tygodnie pracy"
+    "Tygodnie pracy",
+    "Work weeks"
   ],
   "Недель отдыха": [
     "Poilsio savaitės",
-    "Tygodnie odpoczynku"
+    "Tygodnie odpoczynku",
+    "Rest weeks"
   ],
   "Начало цикла": [
     "Ciklo pradžia",
-    "Początek cyklu"
+    "Początek cyklu",
+    "Cycle start"
   ],
   "Окончание (или повторения)": [
     "Pabaiga (arba kartojimai)",
-    "Koniec (lub powtórzenia)"
+    "Koniec (lub powtórzenia)",
+    "End date (or repetitions)"
   ],
   "Количество повторений": [
     "Kartojimų skaičius",
-    "Liczba powtórzeń"
+    "Liczba powtórzeń",
+    "Number of repetitions"
   ],
   "Если заданы оба ограничения, цикл завершится по первому из них.": [
     "Jei nustatytos abi ribos, ciklas baigsis ties ankstesne.",
-    "Jeśli ustawiono oba ograniczenia, cykl zakończy się przy wcześniejszym."
+    "Jeśli ustawiono oba ograniczenia, cykl zakończy się przy wcześniejszym.",
+    "If both limits are set, the cycle ends at the first one reached."
   ],
   "Посмотреть изменения": [
     "Peržiūrėti pakeitimus",
-    "Zobacz zmiany"
+    "Zobacz zmiany",
+    "Preview changes"
   ],
   "Подтверждение нового цикла": [
     "Naujo ciklo patvirtinimas",
-    "Potwierdzenie nowego cyklu"
+    "Potwierdzenie nowego cyklu",
+    "Confirm new cycle"
   ],
   "Будет заменено": [
     "Bus pakeista",
-    "Zostanie zastąpionych"
+    "Zostanie zastąpionych",
+    "Will replace"
   ],
   "автоматических периодов и создано": [
     "automatinių laikotarpių ir sukurta",
-    "okresów automatycznych i utworzonych"
+    "okresów automatycznych i utworzonych",
+    "automatic periods and create"
   ],
   "Ручных исключений сохранится": [
     "Išsaugomų rankinių išimčių",
-    "Zachowanych ręcznych wyjątków"
+    "Zachowanych ręcznych wyjątków",
+    "Manual exceptions preserved"
   ],
   "Периоды, которые будут заменены": [
     "Laikotarpiai, kurie bus pakeisti",
-    "Okresy, które zostaną zastąpione"
+    "Okresy, które zostaną zastąpione",
+    "Periods to be replaced"
   ],
   "Существующие периоды не затронуты.": [
     "Esami laikotarpiai nebus pakeisti.",
-    "Istniejące okresy pozostaną bez zmian."
+    "Istniejące okresy pozostaną bez zmian.",
+    "Existing periods are unchanged."
   ],
   "Новый график": [
     "Naujas grafikas",
-    "Nowy grafik"
+    "Nowy grafik",
+    "New schedule"
   ],
   "Применить цикл": [
     "Taikyti ciklą",
-    "Zastosuj cykl"
+    "Zastosuj cykl",
+    "Apply cycle"
   ],
   "Изменить период": [
     "Keisti laikotarpį",
-    "Zmień okres"
+    "Zmień okres",
+    "Edit period"
   ],
   "Новый период": [
     "Naujas laikotarpis",
-    "Nowy okres"
+    "Nowy okres",
+    "New period"
   ],
   "Статус периода": [
     "Laikotarpio būsena",
-    "Status okresu"
+    "Status okresu",
+    "Period status"
   ],
   "Применить изменение": [
     "Taikyti pakeitimą",
-    "Zastosuj zmianę"
+    "Zastosuj zmianę",
+    "Apply change"
   ],
   "Только этот период": [
     "Tik šis laikotarpis",
-    "Tylko ten okres"
+    "Tylko ten okres",
+    "Only this period"
   ],
   "Этот и следующие автоматические": [
     "Šis ir vėlesni automatiniai",
-    "Ten i kolejne automatyczne"
+    "Ten i kolejne automatyczne",
+    "This and subsequent automatic periods"
   ],
   "Дата начала": [
     "Pradžios data",
-    "Data początku"
+    "Data początku",
+    "Start date"
   ],
   "Дата окончания": [
     "Pabaigos data",
-    "Data końca"
+    "Data końca",
+    "End date"
   ],
   "Примечание": [
     "Pastaba",
-    "Notatka"
+    "Notatka",
+    "Note"
   ],
   "Даты включительно. При сдвиге следующих периодов длительность выбранного периода должна остаться прежней. Ручные исключения останутся на своих датах.": [
     "Datos įskaitytinai. Perkeliant vėlesnius laikotarpius pasirinkto laikotarpio trukmė negali keistis. Rankinės išimtys lieka savo datose.",
-    "Daty włącznie. Przy przesuwaniu kolejnych okresów długość wybranego okresu musi pozostać taka sama. Ręczne wyjątki pozostają na swoich datach."
+    "Daty włącznie. Przy przesuwaniu kolejnych okresów długość wybranego okresu musi pozostać taka sama. Ręczne wyjątki pozostają na swoich datach.",
+    "Dates are inclusive. When shifting subsequent periods, keep the selected period's duration unchanged. Manual exceptions keep their dates."
   ],
   "Удалить период": [
     "Pašalinti laikotarpį",
-    "Usuń okres"
+    "Usuń okres",
+    "Delete period"
   ],
   "Удалить период?": [
     "Pašalinti laikotarpį?",
-    "Usunąć okres?"
+    "Usunąć okres?",
+    "Delete period?"
   ],
   "Удалить": [
     "Pašalinti",
-    "Usuń"
+    "Usuń",
+    "Delete"
   ],
   "Подтвердить сдвиг": [
     "Patvirtinti perkėlimą",
-    "Potwierdź przesunięcie"
+    "Potwierdź przesunięcie",
+    "Confirm shift"
   ],
   "Выбранный период и": [
     "Pasirinktas laikotarpis ir",
-    "Wybrany okres i"
+    "Wybrany okres i",
+    "The selected period and"
   ],
   "следующих автоматических периодов будут изменены.": [
     "vėlesni automatiniai laikotarpiai bus pakeisti.",
-    "kolejnych okresów automatycznych zostanie zmienionych."
+    "kolejnych okresów automatycznych zostanie zmienionych.",
+    "subsequent automatic periods will change."
   ],
   "Применить сдвиг": [
     "Taikyti perkėlimą",
-    "Zastosuj przesunięcie"
+    "Zastosuj przesunięcie",
+    "Apply shift"
   ],
   "В графике останется незаполненный промежуток. Удаление будет записано в историю.": [
     "Grafike liks neužpildytas tarpas. Pašalinimas bus įrašytas istorijoje.",
-    "W grafiku pozostanie pusty przedział. Usunięcie zostanie zapisane w historii."
+    "W grafiku pozostanie pusty przedział. Usunięcie zostanie zapisane w historii.",
+    "An empty gap will remain in the schedule. The deletion will be recorded in history."
   ],
   "Событие": [
     "Įvykis",
-    "Wydarzenie"
+    "Wydarzenie",
+    "Event"
   ],
   "Новое событие": [
     "Naujas įvykis",
-    "Nowe wydarzenie"
+    "Nowe wydarzenie",
+    "New event"
   ],
   "Тип события": [
     "Įvykio tipas",
-    "Typ wydarzenia"
+    "Typ wydarzenia",
+    "Event type"
   ],
   "Дата": [
     "Data",
-    "Data"
+    "Data",
+    "Date"
   ],
   "Время (необязательно)": [
     "Laikas (neprivalomas)",
-    "Godzina (opcjonalnie)"
+    "Godzina (opcjonalnie)",
+    "Time (optional)"
   ],
   "Часовой пояс": [
     "Laiko juosta",
-    "Strefa czasowa"
+    "Strefa czasowa",
+    "Time zone"
   ],
   "Маршрут": [
     "Maršrutas",
-    "Trasa"
+    "Trasa",
+    "Route"
   ],
   "Номер рейса": [
     "Skrydžio numeris",
-    "Numer lotu"
+    "Numer lotu",
+    "Flight number"
   ],
   "Перелёт на объект": [
     "Skrydis į objektą",
-    "Lot na obiekt"
+    "Lot na obiekt",
+    "Outbound flight"
   ],
   "Обратный перелёт": [
     "Skrydis atgal",
-    "Lot powrotny"
+    "Lot powrotny",
+    "Return flight"
   ],
   "Прибытие": [
     "Atvykimas",
-    "Przyjazd"
+    "Przyjazd",
+    "Arrival"
   ],
   "Отъезд": [
     "Išvykimas",
-    "Wyjazd"
+    "Wyjazd",
+    "Departure"
   ],
   "Удалить событие": [
     "Pašalinti įvykį",
-    "Usuń wydarzenie"
+    "Usuń wydarzenie",
+    "Delete event"
   ],
   "Удалить событие?": [
     "Pašalinti įvykį?",
-    "Usunąć wydarzenie?"
+    "Usunąć wydarzenie?",
+    "Delete event?"
   ],
   "Объекты, руководители и сроки работы": [
     "Objektai, vadovai ir darbo terminai",
-    "Obiekty, kierownicy i terminy pracy"
+    "Obiekty, kierownicy i terminy pracy",
+    "Sites, managers and work dates"
   ],
   "Объект": [
     "Objektas",
-    "Obiekt"
+    "Obiekt",
+    "Site"
   ],
   "Проект": [
     "Projektas",
-    "Projekt"
+    "Projekt",
+    "Project"
   ],
   "Открыть график": [
     "Atidaryti grafiką",
-    "Otwórz grafik"
+    "Otwórz grafik",
+    "Open schedule"
   ],
   "Изменить проект": [
     "Keisti projektą",
-    "Edytuj projekt"
+    "Edytuj projekt",
+    "Edit project"
   ],
   "Назначить": [
     "Priskirti",
-    "Przydziel"
+    "Przydziel",
+    "Assign"
   ],
   "Руководители": [
     "Vadovai",
-    "Kierownicy"
+    "Kierownicy",
+    "Managers"
   ],
   "Не назначены": [
     "Nepriskirti",
-    "Nieprzydzieleni"
+    "Nieprzydzieleni",
+    "Not assigned"
   ],
   "Проекты пока не созданы.": [
     "Projektai dar nesukurti.",
-    "Nie utworzono jeszcze projektów."
+    "Nie utworzono jeszcze projektów.",
+    "No projects yet."
   ],
   "ОБЪЕКТЫ": [
     "OBJEKTAI",
-    "OBIEKTY"
+    "OBIEKTY",
+    "SITES"
   ],
   "Изменить объект": [
     "Keisti objektą",
-    "Edytuj obiekt"
+    "Edytuj obiekt",
+    "Edit site"
   ],
   "Новый объект": [
     "Naujas objektas",
-    "Nowy obiekt"
+    "Nowy obiekt",
+    "New site"
   ],
   "Название объекта": [
     "Objekto pavadinimas",
-    "Nazwa obiektu"
+    "Nazwa obiektu",
+    "Site name"
   ],
   "Страна": [
     "Šalis",
-    "Kraj"
+    "Kraj",
+    "Country"
   ],
   "Город": [
     "Miestas",
-    "Miasto"
+    "Miasto",
+    "City"
   ],
   "Адрес": [
     "Adresas",
-    "Adres"
+    "Adres",
+    "Address"
   ],
   "Новый проект": [
     "Naujas projektas",
-    "Nowy projekt"
+    "Nowy projekt",
+    "New project"
   ],
   "Название проекта": [
     "Projekto pavadinimas",
-    "Nazwa projektu"
+    "Nazwa projektu",
+    "Project name"
   ],
   "Статус": [
     "Būsena",
+    "Status",
     "Status"
   ],
   "Активный": [
     "Aktyvus",
-    "Aktywny"
+    "Aktywny",
+    "Active"
   ],
   "Начало проекта": [
     "Projekto pradžia",
-    "Początek projektu"
+    "Początek projektu",
+    "Project start"
   ],
   "Окончание проекта": [
     "Projekto pabaiga",
-    "Koniec projektu"
+    "Koniec projektu",
+    "Project end"
   ],
   "Активных руководителей пока нет.": [
     "Aktyvių vadovų dar nėra.",
-    "Nie ma jeszcze aktywnych kierowników."
+    "Nie ma jeszcze aktywnych kierowników.",
+    "No active managers yet."
   ],
   "При архивировании назначения и история графика сохраняются.": [
     "Archyvuojant priskyrimai ir grafiko istorija išsaugomi.",
-    "Archiwizacja zachowuje przydziały i historię grafiku."
+    "Archiwizacja zachowuje przydziały i historię grafiku.",
+    "Assignments and schedule history are preserved when archiving."
   ],
   "Карточки команды и история назначений": [
     "Komandos kortelės ir priskyrimų istorija",
-    "Karty zespołu i historia przydziałów"
+    "Karty zespołu i historia przydziałów",
+    "Team cards and assignment history"
   ],
   "Добавить работника": [
     "Pridėti darbuotoją",
-    "Dodaj pracownika"
+    "Dodaj pracownika",
+    "Add employee"
   ],
   "Специальность": [
     "Specialybė",
-    "Specjalność"
+    "Specjalność",
+    "Specialty"
   ],
   "Проекты / назначения": [
     "Projektai / priskyrimai",
-    "Projekty / przydziały"
+    "Projekty / przydziały",
+    "Projects / assignments"
   ],
   "Не назначен": [
     "Nepriskirtas",
-    "Nieprzydzielony"
+    "Nieprzydzielony",
+    "Not assigned"
   ],
   "Изменить работника": [
     "Keisti darbuotoją",
-    "Edytuj pracownika"
+    "Edytuj pracownika",
+    "Edit employee"
   ],
   "Назначить на проект": [
     "Priskirti projektui",
-    "Przydziel do projektu"
+    "Przydziel do projektu",
+    "Assign to project"
   ],
   "Новый работник": [
     "Naujas darbuotojas",
-    "Nowy pracownik"
+    "Nowy pracownik",
+    "New employee"
   ],
   "Имя": [
     "Vardas",
-    "Imię"
+    "Imię",
+    "First name"
   ],
   "Фамилия": [
     "Pavardė",
-    "Nazwisko"
+    "Nazwisko",
+    "Last name"
   ],
   "Контактные данные": [
     "Kontaktiniai duomenys",
-    "Dane kontaktowe"
+    "Dane kontaktowe",
+    "Contact details"
   ],
   "Назначить работника": [
     "Priskirti darbuotoją",
-    "Przydziel pracownika"
+    "Przydziel pracownika",
+    "Assign employee"
   ],
   "Начало назначения": [
     "Priskyrimo pradžia",
-    "Początek przydziału"
+    "Początek przydziału",
+    "Assignment start"
   ],
   "Окончание назначения": [
     "Priskyrimo pabaiga",
-    "Koniec przydziału"
+    "Koniec przydziału",
+    "Assignment end"
   ],
   "Назначения на разные объекты не могут пересекаться. Чтобы завершить назначение, измените дату окончания, сохраняя исторические периоды.": [
     "Priskyrimai skirtingiems objektams negali persidengti. Norėdami baigti priskyrimą, pakeiskite pabaigos datą išsaugodami istorinius laikotarpius.",
-    "Przydziały do różnych obiektów nie mogą się nakładać. Aby zakończyć przydział, zmień datę końca, zachowując historyczne okresy."
+    "Przydziały do różnych obiektów nie mogą się nakładać. Aby zakończyć przydział, zmień datę końca, zachowując historyczne okresy.",
+    "Assignments to different sites cannot overlap. To end an assignment, change its end date while preserving historical periods."
   ],
   "Доступ руководителей к проектам": [
     "Vadovų prieiga prie projektų",
-    "Dostęp kierowników do projektów"
+    "Dostęp kierowników do projektów",
+    "Manager access to projects"
   ],
   "Добавить руководителя": [
     "Pridėti vadovą",
-    "Dodaj kierownika"
+    "Dodaj kierownika",
+    "Add manager"
   ],
   "Пользователь": [
     "Naudotojas",
-    "Użytkownik"
+    "Użytkownik",
+    "User"
   ],
   "Роль": [
     "Vaidmuo",
-    "Rola"
+    "Rola",
+    "Role"
   ],
   "Доступ": [
     "Prieiga",
-    "Dostęp"
+    "Dostęp",
+    "Access"
   ],
   "Все проекты": [
     "Visi projektai",
-    "Wszystkie projekty"
+    "Wszystkie projekty",
+    "All projects"
   ],
   "Активен": [
     "Aktyvus",
-    "Aktywny"
+    "Aktywny",
+    "Active"
   ],
   "Отключён": [
     "Išjungtas",
-    "Wyłączony"
+    "Wyłączony",
+    "Disabled"
   ],
   "Изменить пользователя": [
     "Keisti naudotoją",
-    "Edytuj użytkownika"
+    "Edytuj użytkownika",
+    "Edit user"
   ],
   "Изменить учётную запись": [
     "Keisti paskyrą",
-    "Edytuj konto"
+    "Edytuj konto",
+    "Edit account"
   ],
   "Новый руководитель": [
     "Naujas vadovas",
-    "Nowy kierownik"
+    "Nowy kierownik",
+    "New manager"
   ],
   "Имя и фамилия": [
     "Vardas ir pavardė",
-    "Imię i nazwisko"
+    "Imię i nazwisko",
+    "Full name"
   ],
   "Новый пароль (необязательно)": [
     "Naujas slaptažodis (neprivalomas)",
-    "Nowe hasło (opcjonalnie)"
+    "Nowe hasło (opcjonalnie)",
+    "New password (optional)"
   ],
   "Учётная запись активна": [
     "Paskyra aktyvi",
-    "Konto aktywne"
+    "Konto aktywne",
+    "Account is active"
   ],
   "Проекты назначаются в карточке проекта. Отключение немедленно завершит все сессии пользователя.": [
     "Projektai priskiriami projekto kortelėje. Išjungus paskyrą visos naudotojo sesijos iškart baigiamos.",
-    "Projekty przypisuje się w karcie projektu. Wyłączenie natychmiast zakończy wszystkie sesje użytkownika."
+    "Projekty przypisuje się w karcie projektu. Wyłączenie natychmiast zakończy wszystkie sesje użytkownika.",
+    "Projects are assigned in the project card. Disabling an account immediately ends all of the user's sessions."
   ],
   "Текущий пароль": [
     "Dabartinis slaptažodis",
-    "Obecne hasło"
+    "Obecne hasło",
+    "Current password"
   ],
   "Новый пароль": [
     "Naujas slaptažodis",
-    "Nowe hasło"
+    "Nowe hasło",
+    "New password"
   ],
   "Повторите новый пароль": [
     "Pakartokite naują slaptažodį",
-    "Powtórz nowe hasło"
+    "Powtórz nowe hasło",
+    "Repeat new password"
   ],
   "После смены пароля потребуется войти заново.": [
     "Pakeitus slaptažodį reikės prisijungti iš naujo.",
-    "Po zmianie hasła trzeba zalogować się ponownie."
+    "Po zmianie hasła trzeba zalogować się ponownie.",
+    "You will need to sign in again after changing your password."
   ],
   "Новые пароли не совпадают.": [
     "Nauji slaptažodžiai nesutampa.",
-    "Nowe hasła nie są takie same."
+    "Nowe hasła nie są takie same.",
+    "The new passwords do not match."
   ],
   "Пароль изменён. Войдите с новым паролем.": [
     "Slaptažodis pakeistas. Prisijunkite su nauju slaptažodžiu.",
-    "Hasło zmienione. Zaloguj się nowym hasłem."
+    "Hasło zmienione. Zaloguj się nowym hasłem.",
+    "Password changed. Sign in with your new password."
   ],
   "Экспорт графика в PDF": [
     "Grafiko eksportas į PDF",
-    "Eksport grafiku do PDF"
+    "Eksport grafiku do PDF",
+    "Export schedule to PDF"
   ],
   "Начало периода": [
     "Laikotarpio pradžia",
-    "Początek okresu"
+    "Początek okresu",
+    "Period start"
   ],
   "Окончание периода": [
     "Laikotarpio pabaiga",
-    "Koniec okresu"
+    "Koniec okresu",
+    "Period end"
   ],
   "Бумага": [
     "Popierius",
-    "Papier"
+    "Papier",
+    "Paper"
   ],
   "альбомная": [
     "gulsčias",
-    "poziomo"
+    "poziomo",
+    "landscape"
   ],
   "Все работники": [
     "Visi darbuotojai",
-    "Wszyscy pracownicy"
+    "Wszyscy pracownicy",
+    "All employees"
   ],
   "Выбранные работники": [
     "Pasirinkti darbuotojai",
-    "Wybrani pracownicy"
+    "Wybrani pracownicy",
+    "Selected employees"
   ],
   "Включить примечания": [
     "Įtraukti pastabas",
-    "Uwzględnij notatki"
+    "Uwzględnij notatki",
+    "Include notes"
   ],
   "Включить перелёты и события": [
     "Įtraukti skrydžius ir įvykius",
-    "Uwzględnij loty i wydarzenia"
+    "Uwzględnij loty i wydarzenia",
+    "Include travel and events"
   ],
   "Полный диапазон будет разбит на читаемые страницы. Имена и заголовки повторяются; детали перелётов и примечания — в приложении.": [
     "Visas laikotarpis bus padalintas į aiškius puslapius. Vardai ir antraštės kartojami; skrydžių informacija ir pastabos pateikiamos priede.",
-    "Cały zakres zostanie podzielony na czytelne strony. Nazwiska i nagłówki są powtarzane; szczegóły lotów i notatki są w załączniku."
+    "Cały zakres zostanie podzielony na czytelne strony. Nazwiska i nagłówki są powtarzane; szczegóły lotów i notatki są w załączniku.",
+    "The full range will be split into readable pages. Names and headers repeat; travel details and notes are in the appendix."
   ],
   "Скачать PDF": [
     "Atsisiųsti PDF",
-    "Pobierz PDF"
+    "Pobierz PDF",
+    "Download PDF"
   ],
   "PDF сформирован": [
     "PDF sukurtas",
-    "PDF wygenerowany"
+    "PDF wygenerowany",
+    "PDF generated"
   ],
   "Кто, когда и что изменил": [
     "Kas, kada ir ką pakeitė",
-    "Kto, kiedy i co zmienił"
+    "Kto, kiedy i co zmienił",
+    "Who changed what and when"
   ],
   "Загрузка…": [
     "Įkeliama…",
-    "Ładowanie…"
+    "Ładowanie…",
+    "Loading…"
   ],
   "Дата и время": [
     "Data ir laikas",
-    "Data i godzina"
+    "Data i godzina",
+    "Date and time"
   ],
   "Действие": [
     "Veiksmas",
-    "Działanie"
+    "Działanie",
+    "Action"
   ],
   "Общие данные": [
     "Bendri duomenys",
-    "Dane ogólne"
+    "Dane ogólne",
+    "General data"
   ],
   "Подробности": [
     "Išsamiau",
-    "Szczegóły"
+    "Szczegóły",
+    "Details"
   ],
   "Система": [
     "Sistema",
+    "System",
     "System"
   ],
   "До изменения": [
     "Prieš pakeitimą",
-    "Przed zmianą"
+    "Przed zmianą",
+    "Before change"
   ],
   "После изменения": [
     "Po pakeitimo",
-    "Po zmianie"
+    "Po zmianie",
+    "After change"
   ],
   "Название": [
     "Pavadinimas",
-    "Nazwa"
+    "Nazwa",
+    "Name"
   ],
   "Начало": [
     "Pradžia",
-    "Początek"
+    "Początek",
+    "Start"
   ],
   "Окончание": [
     "Pabaiga",
-    "Koniec"
+    "Koniec",
+    "End"
   ],
   "Статус / событие": [
     "Būsena / įvykis",
-    "Status / wydarzenie"
+    "Status / wydarzenie",
+    "Status / event"
   ],
   "Время": [
     "Laikas",
-    "Godzina"
+    "Godzina",
+    "Time"
   ],
   "Рейс": [
     "Skrydis",
-    "Lot"
+    "Lot",
+    "Flight"
   ],
   "Контакты": [
     "Kontaktai",
-    "Kontakty"
+    "Kontakty",
+    "Contacts"
   ],
   "Создание": [
     "Sukūrimas",
-    "Utworzenie"
+    "Utworzenie",
+    "Creation"
   ],
   "Изменение": [
     "Pakeitimas",
-    "Zmiana"
+    "Zmiana",
+    "Update"
   ],
   "Удаление": [
     "Pašalinimas",
-    "Usunięcie"
+    "Usunięcie",
+    "Deletion"
   ],
   "Изменение периода": [
     "Laikotarpio pakeitimas",
-    "Zmiana okresu"
+    "Zmiana okresu",
+    "Period update"
   ],
   "Создание периода": [
     "Laikotarpio sukūrimas",
-    "Utworzenie okresu"
+    "Utworzenie okresu",
+    "Period creation"
   ],
   "Сдвиг периода": [
     "Laikotarpio perkėlimas",
-    "Przesunięcie okresu"
+    "Przesunięcie okresu",
+    "Period shift"
   ],
   "Построение цикла": [
     "Ciklo sukūrimas",
-    "Utworzenie cyklu"
+    "Utworzenie cyklu",
+    "Cycle creation"
   ],
   "Изменение события": [
     "Įvykio pakeitimas",
-    "Zmiana wydarzenia"
+    "Zmiana wydarzenia",
+    "Event update"
   ],
   "Создание события": [
     "Įvykio sukūrimas",
-    "Utworzenie wydarzenia"
+    "Utworzenie wydarzenia",
+    "Event creation"
   ],
   "Смена пароля": [
     "Slaptažodžio pakeitimas",
-    "Zmiana hasła"
+    "Zmiana hasła",
+    "Password change"
   ],
   "Создана демонстрация": [
     "Sukurta demonstracija",
-    "Utworzono demonstrację"
+    "Utworzono demonstrację",
+    "Demo created"
   ],
   "Удалить из списка": [
     "Pašalinti iš sąrašo",
-    "Usuń z listy"
+    "Usuń z listy",
+    "Remove from list"
   ],
   "Вернуть в список": [
     "Grąžinti į sąrašą",
-    "Przywróć do listy"
+    "Przywróć do listy",
+    "Restore to list"
   ],
   "Сделать работника неактивным?": [
     "Padaryti darbuotoją neaktyvų?",
-    "Ustawić pracownika jako nieaktywnego?"
+    "Ustawić pracownika jako nieaktywnego?",
+    "Make employee inactive?"
   ],
   "Работник исчезнет из активного списка. Его назначения, ротации и история сохранятся. Его можно вернуть через фильтр «Неактивные работники».": [
     "Darbuotojas bus paslėptas aktyviame sąraše. Jo priskyrimai, rotacijos ir istorija bus išsaugoti. Jį galima grąžinti naudojant filtrą „Neaktyvūs darbuotojai“.",
-    "Pracownik zniknie z listy aktywnych. Jego przydziały, rotacje i historia zostaną zachowane. Można go przywrócić przez filtr „Nieaktywni pracownicy”."
+    "Pracownik zniknie z listy aktywnych. Jego przydziały, rotacje i historia zostaną zachowane. Można go przywrócić przez filtr „Nieaktywni pracownicy”.",
+    "The employee will disappear from the active list. Assignments, rotations and history are preserved. Restore them using the Inactive employees filter."
   ],
   "Статус добавлен": [
     "Būsena pridėta",
-    "Status dodany"
+    "Status dodany",
+    "Status added"
   ],
   "Событие добавлено": [
     "Įvykis pridėtas",
-    "Wydarzenie dodane"
+    "Wydarzenie dodane",
+    "Event added"
   ],
   "Слой": [
     "Sluoksnis",
-    "Warstwa"
+    "Warstwa",
+    "Layer"
   ],
   "Выберите день в строке работника": [
     "Pasirinkite dieną darbuotojo eilutėje",
-    "Wybierz dzień w wierszu pracownika"
+    "Wybierz dzień w wierszu pracownika",
+    "Select a day in the employee's row"
   ],
   "Закрыть и обновить данные": [
     "Uždaryti ir atnaujinti duomenis",
-    "Zamknij i odśwież dane"
+    "Zamknij i odśwież dane",
+    "Close and refresh data"
   ],
   "Не удалось подключиться к серверу.": [
     "Nepavyko prisijungti prie serverio.",
-    "Nie udało się połączyć z serwerem."
+    "Nie udało się połączyć z serwerem.",
+    "Could not connect to the server."
   ],
   "Сервер недоступен.": [
     "Serveris nepasiekiamas.",
-    "Serwer jest niedostępny."
+    "Serwer jest niedostępny.",
+    "Server unavailable."
   ],
   "Войдите в систему.": [
     "Prisijunkite prie sistemos.",
-    "Zaloguj się."
+    "Zaloguj się.",
+    "Sign in to continue."
   ],
   "Нет доступа к проекту.": [
     "Nėra prieigos prie projekto.",
-    "Brak dostępu do projektu."
+    "Brak dostępu do projektu.",
+    "You do not have access to this project."
   ],
   "Доступно только администратору.": [
     "Prieinama tik administratoriui.",
-    "Dostępne tylko dla administratora."
+    "Dostępne tylko dla administratora.",
+    "Administrators only."
   ],
   "Неверный логин или пароль.": [
     "Neteisingas prisijungimo vardas arba slaptažodis.",
-    "Nieprawidłowy login lub hasło."
+    "Nieprawidłowy login lub hasło.",
+    "Invalid username or password."
   ],
   "Текущий пароль неверен.": [
     "Dabartinis slaptažodis neteisingas.",
-    "Obecne hasło jest nieprawidłowe."
+    "Obecne hasło jest nieprawidłowe.",
+    "The current password is incorrect."
   ],
   "Проект архивирован. Сначала восстановите его.": [
     "Projektas archyvuotas. Pirmiausia jį atkurkite.",
-    "Projekt jest zarchiwizowany. Najpierw go przywróć."
+    "Projekt jest zarchiwizowany. Najpierw go przywróć.",
+    "The project is archived. Restore it first."
   ],
   "Работник архивирован. Сначала восстановите его.": [
     "Darbuotojas neaktyvus. Pirmiausia jį atkurkite.",
-    "Pracownik jest nieaktywny. Najpierw go przywróć."
+    "Pracownik jest nieaktywny. Najpierw go przywróć.",
+    "The employee is archived. Restore them first."
   ],
   "Запись уже изменена другим пользователем. Обновите данные и повторите правку.": [
     "Įrašą jau pakeitė kitas naudotojas. Atnaujinkite duomenis ir pakartokite pakeitimą.",
-    "Inny użytkownik zmienił już rekord. Odśwież dane i ponów zmianę."
+    "Inny użytkownik zmienił już rekord. Odśwież dane i ponów zmianę.",
+    "Another user has already changed this record. Refresh data and try again."
   ],
   "Период выходит за даты назначения работника на проект.": [
     "Laikotarpis nepatenka į darbuotojo priskyrimo projektui datas.",
-    "Okres wykracza poza daty przydziału pracownika do projektu."
+    "Okres wykracza poza daty przydziału pracownika do projektu.",
+    "The period falls outside the employee's project assignment dates."
   ],
   "Периоды пересекаются на одном слое или относятся к разным проектам.": [
     "Laikotarpiai persidengia tame pačiame sluoksnyje arba priklauso skirtingiems projektams.",
-    "Okresy nakładają się na tej samej warstwie lub należą do różnych projektów."
+    "Okresy nakładają się na tej samej warstwie lub należą do różnych projektów.",
+    "Periods overlap on the same layer or belong to different projects."
   ],
   "Дата окончания должна быть не раньше даты начала.": [
     "Pabaigos data negali būti ankstesnė už pradžios datą.",
-    "Data końca nie może być wcześniejsza od daty początku."
+    "Data końca nie może być wcześniejsza od daty początku.",
+    "The end date must be on or after the start date."
   ],
   "Работник не назначен на проект.": [
     "Darbuotojas nepriskirtas projektui.",
-    "Pracownik nie jest przydzielony do projektu."
+    "Pracownik nie jest przydzielony do projektu.",
+    "The employee is not assigned to this project."
   ],
   "Событие выходит за даты назначения.": [
     "Įvykis nepatenka į priskyrimo datas.",
-    "Wydarzenie wykracza poza daty przydziału."
+    "Wydarzenie wykracza poza daty przydziału.",
+    "The event falls outside the assignment dates."
   ],
   "Сначала назначьте работников на проект.": [
     "Pirmiausia priskirkite darbuotojus projektui.",
-    "Najpierw przydziel pracowników do projektu."
+    "Najpierw przydziel pracowników do projektu.",
+    "Assign employees to the project first."
   ],
   "Сначала восстановите проект.": [
     "Pirmiausia atkurkite projektą.",
-    "Najpierw przywróć projekt."
+    "Najpierw przywróć projekt.",
+    "Restore the project first."
   ],
   "Нужен активный проект и активный работник.": [
     "Reikalingas aktyvus projektas ir aktyvus darbuotojas.",
-    "Potrzebny jest aktywny projekt i aktywny pracownik."
+    "Potrzebny jest aktywny projekt i aktywny pracownik.",
+    "An active project and active employee are required."
   ],
   "планирование команды": [
     "komandos planavimas",
-    "planowanie zespołu"
+    "planowanie zespołu",
+    "team planning"
   ],
   "Запись не найдена.": [
     "Įrašas nerastas.",
-    "Nie znaleziono rekordu."
+    "Nie znaleziono rekordu.",
+    "Record not found."
   ],
   "Слишком много попыток. Повторите через 15 минут.": [
     "Per daug bandymų. Bandykite po 15 minučių.",
-    "Zbyt wiele prób. Spróbuj za 15 minut."
+    "Zbyt wiele prób. Spróbuj za 15 minut.",
+    "Too many attempts. Try again in 15 minutes."
   ],
   "Сначала просмотрите изменения графика. Предпросмотр устарел.": [
     "Pirmiausia peržiūrėkite grafiko pakeitimus. Peržiūra paseno.",
-    "Najpierw sprawdź zmiany grafiku. Podgląd jest nieaktualny."
+    "Najpierw sprawdź zmiany grafiku. Podgląd jest nieaktualny.",
+    "Preview the schedule changes first. The preview has expired."
   ],
   "Время указывается в формате ЧЧ:ММ.": [
     "Laikas nurodomas formatu VV:MM.",
-    "Godzinę podaj w formacie GG:MM."
+    "Godzinę podaj w formacie GG:MM.",
+    "Enter time in HH:MM format."
   ],
   "Удаление недоступно. Используйте архивирование.": [
     "Pašalinimas negalimas. Naudokite archyvavimą.",
-    "Usuwanie niedostępne. Użyj archiwizacji."
+    "Usuwanie niedostępne. Użyj archiwizacji.",
+    "Deletion is unavailable. Use archiving."
   ],
   "Неизвестный часовой пояс. Пример: Europe/Stockholm.": [
     "Nežinoma laiko juosta. Pavyzdys: Europe/Stockholm.",
-    "Nieznana strefa czasowa. Przykład: Europe/Stockholm."
+    "Nieznana strefa czasowa. Przykład: Europe/Stockholm.",
+    "Unknown time zone. Example: Europe/Stockholm."
   ],
   "Для сдвига следующих периодов сохраните длительность выбранного периода.": [
     "Norėdami perkelti vėlesnius laikotarpius, nekeiskite pasirinkto laikotarpio trukmės.",
-    "Aby przesunąć kolejne okresy, zachowaj długość wybranego okresu."
+    "Aby przesunąć kolejne okresy, zachowaj długość wybranego okresu.",
+    "Keep the selected period's duration when shifting subsequent periods."
   ],
   "Даты проекта должны охватывать все назначения.": [
     "Projekto datos turi apimti visus priskyrimus.",
-    "Daty projektu muszą obejmować wszystkie przydziały."
+    "Daty projektu muszą obejmować wszystkie przydziały.",
+    "Project dates must cover all assignments."
   ],
   "Назначайте активных руководителей проектов.": [
     "Priskirkite aktyvius projektų vadovus.",
-    "Przydzielaj aktywnych kierowników projektów."
+    "Przydzielaj aktywnych kierowników projektów.",
+    "Assign active project managers."
   ],
   "Смена объекта создаст конфликт назначений.": [
     "Objekto pakeitimas sukels priskyrimų konfliktą.",
-    "Zmiana obiektu spowoduje konflikt przydziałów."
+    "Zmiana obiektu spowoduje konflikt przydziałów.",
+    "Changing the site will create an assignment conflict."
   ],
   "Логин: 3–64 латинских символа, цифры, точка, дефис или подчёркивание.": [
     "Prisijungimo vardas: 3–64 lotyniškos raidės, skaitmenys, taškas, brūkšnelis arba pabraukimas.",
-    "Login: 3–64 litery łacińskie, cyfry, kropka, myślnik lub podkreślenie."
+    "Login: 3–64 litery łacińskie, cyfry, kropka, myślnik lub podkreślenie.",
+    "Username: 3–64 Latin letters, digits, dots, hyphens or underscores."
   ],
   "Нельзя отключить собственную учётную запись.": [
     "Negalite išjungti savo paskyros.",
-    "Nie można wyłączyć własnego konta."
+    "Nie można wyłączyć własnego konta.",
+    "You cannot disable your own account."
   ],
   "Сначала восстановите проект и работника.": [
     "Pirmiausia atkurkite projektą ir darbuotoją.",
-    "Najpierw przywróć projekt i pracownika."
+    "Najpierw przywróć projekt i pracownika.",
+    "Restore the project and employee first."
   ],
   "Назначение выходит за даты проекта.": [
     "Priskyrimas nepatenka į projekto datas.",
-    "Przydział wykracza poza daty projektu."
+    "Przydział wykracza poza daty projektu.",
+    "The assignment falls outside the project dates."
   ],
   "У назначения нельзя менять проект или работника. Создайте новое назначение.": [
     "Priskyrimo projekto ar darbuotojo pakeisti negalima. Sukurkite naują priskyrimą.",
-    "Nie można zmienić projektu ani pracownika przydziału. Utwórz nowy przydział."
+    "Nie można zmienić projektu ani pracownika przydziału. Utwórz nowy przydział.",
+    "You cannot change an assignment's project or employee. Create a new assignment."
   ],
   "Назначение пересекается с существующим назначением на этот проект или другой объект.": [
     "Priskyrimas persidengia su esamu priskyrimu šiam projektui ar kitam objektui.",
-    "Przydział nakłada się na istniejący przydział do tego projektu lub innego obiektu."
+    "Przydział nakłada się na istniejący przydział do tego projektu lub innego obiektu.",
+    "The assignment overlaps an existing assignment to this project or another site."
   ],
   "Даты назначения должны охватывать события работника.": [
     "Priskyrimo datos turi apimti darbuotojo įvykius.",
-    "Daty przydziału muszą obejmować wydarzenia pracownika."
+    "Daty przydziału muszą obejmować wydarzenia pracownika.",
+    "Assignment dates must cover the employee's events."
   ],
   "Допускается не более 32 слоёв графика.": [
     "Leidžiama ne daugiau kaip 32 grafiko sluoksniai.",
-    "Dozwolone są maksymalnie 32 warstwy grafiku."
+    "Dozwolone są maksymalnie 32 warstwy grafiku.",
+    "A maximum of 32 schedule layers is allowed."
   ],
   "Диапазон не должен превышать пять лет.": [
     "Laikotarpis negali viršyti penkerių metų.",
-    "Zakres nie może przekraczać pięciu lat."
+    "Zakres nie może przekraczać pięciu lat.",
+    "The range must not exceed five years."
   ],
   "Длительность работы и отдыха: от 1 до 52 недель.": [
     "Darbo ir poilsio trukmė: nuo 1 iki 52 savaičių.",
-    "Czas pracy i odpoczynku: od 1 do 52 tygodni."
+    "Czas pracy i odpoczynku: od 1 do 52 tygodni.",
+    "Work and rest duration: 1 to 52 weeks."
   ],
   "Количество повторений: от 1 до 100.": [
     "Kartojimų skaičius: nuo 1 iki 100.",
-    "Liczba powtórzeń: od 1 do 100."
+    "Liczba powtórzeń: od 1 do 100.",
+    "Number of repetitions: 1 to 100."
   ],
   "Укажите дату окончания или количество повторений.": [
     "Nurodykite pabaigos datą arba kartojimų skaičių.",
-    "Podaj datę końca lub liczbę powtórzeń."
+    "Podaj datę końca lub liczbę powtórzeń.",
+    "Enter an end date or number of repetitions."
   ],
   "Укажите корректную дату в формате ГГГГ-ММ-ДД.": [
     "Nurodykite teisingą datą formatu MMMM-MM-DD.",
-    "Podaj poprawną datę w formacie RRRR-MM-DD."
+    "Podaj poprawną datę w formacie RRRR-MM-DD.",
+    "Enter a valid date in YYYY-MM-DD format."
   ],
   "Недели и количество повторений должны быть целыми числами.": [
     "Savaičių ir kartojimų skaičiai turi būti sveikieji.",
-    "Liczba tygodni i powtórzeń musi być całkowita."
+    "Liczba tygodni i powtórzeń musi być całkowita.",
+    "Weeks and repetitions must be whole numbers."
   ],
   "Пароль должен содержать от 10 до 256 символов.": [
     "Slaptažodis turi būti nuo 10 iki 256 simbolių.",
-    "Hasło musi mieć od 10 do 256 znaków."
+    "Hasło musi mieć od 10 do 256 znaków.",
+    "The password must contain 10 to 256 characters."
   ],
   "Сессия устарела. Обновите страницу.": [
     "Sesija paseno. Atnaujinkite puslapį.",
-    "Sesja wygasła. Odśwież stronę."
+    "Sesja wygasła. Odśwież stronę.",
+    "Your session has expired. Refresh the page."
   ],
   "Источник запроса не разрешён.": [
     "Užklausos šaltinis neleidžiamas.",
-    "Źródło żądania jest niedozwolone."
+    "Źródło żądania jest niedozwolone.",
+    "The request origin is not allowed."
   ],
   "Выберите A4 или A3.": [
     "Pasirinkite A4 arba A3.",
-    "Wybierz A4 lub A3."
+    "Wybierz A4 lub A3.",
+    "Choose A4 or A3."
   ],
   "Нет работников с назначением в выбранном диапазоне.": [
     "Pasirinktame laikotarpyje nėra priskirtų darbuotojų.",
-    "Brak przydzielonych pracowników w wybranym zakresie."
+    "Brak przydzielonych pracowników w wybranym zakresie.",
+    "No employees are assigned in the selected range."
   ],
   "Выберите хотя бы одного работника.": [
     "Pasirinkite bent vieną darbuotoją.",
-    "Wybierz co najmniej jednego pracownika."
+    "Wybierz co najmniej jednego pracownika.",
+    "Select at least one employee."
   ],
   "Нет доступа к выбранным работникам в этом диапазоне.": [
     "Nėra prieigos prie pasirinktų darbuotojų šiame laikotarpyje.",
-    "Brak dostępu do wybranych pracowników w tym zakresie."
+    "Brak dostępu do wybranych pracowników w tym zakresie.",
+    "You do not have access to the selected employees in this range."
   ],
   "Не удалось выполнить запрос. Повторите попытку; подробности записаны в журнале сервера.": [
     "Nepavyko įvykdyti užklausos. Bandykite dar kartą; išsami informacija įrašyta serverio žurnale.",
-    "Nie udało się wykonać żądania. Spróbuj ponownie; szczegóły zapisano w dzienniku serwera."
+    "Nie udało się wykonać żądania. Spróbuj ponownie; szczegóły zapisano w dzienniku serwera.",
+    "The request failed. Try again; details are recorded in the server log."
   ],
   "Такая запись уже существует или связанная запись недоступна.": [
     "Toks įrašas jau yra arba susijęs įrašas neprieinamas.",
-    "Taki rekord już istnieje lub powiązany rekord jest niedostępny."
+    "Taki rekord już istnieje lub powiązany rekord jest niedostępny.",
+    "This record already exists or a related record is unavailable."
   ],
   "Не удалось сохранить.": [
     "Nepavyko išsaugoti.",
-    "Nie udało się zapisać."
+    "Nie udało się zapisać.",
+    "Could not save."
   ],
   "Здесь создаётся период на один день. Нажмите на полосу, чтобы изменить даты.": [
     "Čia sukuriamas vienos dienos laikotarpis. Spustelėkite juostą, kad pakeistumėte datas.",
-    "Tutaj powstaje okres na jeden dzień. Kliknij pasek, aby zmienić daty."
+    "Tutaj powstaje okres na jeden dzień. Kliknij pasek, aby zmienić daty.",
+    "This creates a one-day period. Click the bar to change its dates."
   ],
   "Секретарь": [
     "Sekretorius",
-    "Sekretarz"
+    "Sekretarz",
+    "Secretary"
   ],
   "Зарегистрировать работника": [
     "Registruoti darbuotoją",
-    "Zarejestruj pracownika"
+    "Zarejestruj pracownika",
+    "Register employee"
   ],
   "Зарегистрировать": [
     "Registruoti",
-    "Zarejestruj"
+    "Zarejestruj",
+    "Register"
   ],
   "Сразу назначить на проект": [
     "Iškart priskirti projektui",
-    "Od razu przydziel do projektu"
+    "Od razu przydziel do projektu",
+    "Assign to project immediately"
   ],
   "Без назначения": [
     "Be priskyrimo",
-    "Bez przydziału"
+    "Bez przydziału",
+    "No assignment"
   ],
   "Добавить период": [
     "Pridėti laikotarpį",
-    "Dodaj okres"
+    "Dodaj okres",
+    "Add period"
   ],
   "Добавить пользователя": [
     "Pridėti naudotoją",
-    "Dodaj użytkownika"
+    "Dodaj użytkownika",
+    "Add user"
   ],
   "Новый пользователь": [
     "Naujas naudotojas",
-    "Nowy użytkownik"
+    "Nowy użytkownik",
+    "New user"
   ],
   "Доступ руководителей и секретарей к проектам": [
     "Vadovų ir sekretorių prieiga prie projektų",
-    "Dostęp kierowników i sekretarzy do projektów"
+    "Dostęp kierowników i sekretarzy do projektów",
+    "Manager and secretary access to projects"
   ],
   "Руководители и секретари": [
     "Vadovai ir sekretoriai",
-    "Kierownicy i sekretarze"
+    "Kierownicy i sekretarze",
+    "Managers and secretaries"
   ],
   "Просмотр периода": [
     "Laikotarpio peržiūra",
-    "Podgląd okresu"
+    "Podgląd okresu",
+    "View period"
   ],
   "Просмотр события": [
     "Įvykio peržiūra",
-    "Podgląd wydarzenia"
+    "Podgląd wydarzenia",
+    "View event"
   ],
   "Секретарь может изменять только работу и больничные.": [
     "Sekretorius gali keisti tik darbo ir nedarbingumo laikotarpius.",
-    "Sekretarz może zmieniać tylko pracę i zwolnienia lekarskie."
+    "Sekretarz może zmieniać tylko pracę i zwolnienia lekarskie.",
+    "Secretaries can only edit work and sick leave."
   ],
   "Секретарь может изменять только работу и больничные, по одному периоду.": [
     "Sekretorius gali keisti tik darbo ir nedarbingumo laikotarpius, po vieną.",
-    "Sekretarz może zmieniać tylko pracę i zwolnienia lekarskie, po jednym okresie."
+    "Sekretarz może zmieniać tylko pracę i zwolnienia lekarskie, po jednym okresie.",
+    "Secretaries can only edit work and sick leave, one period at a time."
   ],
   "Секретарь может изменять только работу, больничные и перелёты.": [
     "Sekretorius gali keisti tik darbą, nedarbingumą ir skrydžius.",
-    "Sekretarz może zmieniać tylko pracę, zwolnienia lekarskie i loty."
+    "Sekretarz może zmieniać tylko pracę, zwolnienia lekarskie i loty.",
+    "Secretaries can only edit work, sick leave and travel."
   ],
   "Секретарь может изменять только перелёты.": [
     "Sekretorius gali keisti tik skrydžius.",
-    "Sekretarz może zmieniać tylko loty."
+    "Sekretarz może zmieniać tylko loty.",
+    "Secretaries can only edit travel."
   ],
   "Построение циклов доступно администратору и руководителю.": [
     "Ciklus kurti gali administratorius ir vadovas.",
-    "Cykle mogą tworzyć administrator i kierownik."
+    "Cykle mogą tworzyć administrator i kierownik.",
+    "Only administrators and project managers can create cycles."
   ],
   "Назначайте активных руководителей или секретарей.": [
     "Priskirkite aktyvius vadovus arba sekretorius.",
-    "Przydzielaj aktywnych kierowników lub sekretarzy."
+    "Przydzielaj aktywnych kierowników lub sekretarzy.",
+    "Assign active managers or secretaries."
   ],
   "Выберите роль руководителя или секретаря.": [
     "Pasirinkite vadovo arba sekretoriaus vaidmenį.",
-    "Wybierz rolę kierownika lub sekretarza."
+    "Wybierz rolę kierownika lub sekretarza.",
+    "Choose the manager or secretary role."
   ],
   "Роль администратора нельзя изменить.": [
     "Administratoriaus vaidmens keisti negalima.",
-    "Nie można zmienić roli administratora."
+    "Nie można zmienić roli administratora.",
+    "The administrator role cannot be changed."
   ],
   "Команда": [
     "Komanda",
-    "Zespół"
+    "Zespół",
+    "Team"
   ],
   "По командам": [
     "Pagal komandas",
-    "Według zespołów"
+    "Według zespołów",
+    "Group by team"
   ],
   "Без команды": [
     "Be komandos",
-    "Bez zespołu"
+    "Bez zespołu",
+    "No team"
   ],
   "Команда работника": [
     "Darbuotojo komanda",
-    "Zespół pracownika"
+    "Zespół pracownika",
+    "Employee team"
   ],
   "Новая команда": [
     "Nauja komanda",
-    "Nowy zespół"
+    "Nowy zespół",
+    "New team"
   ],
   "Изменить команду": [
     "Keisti komandą",
-    "Edytuj zespół"
+    "Edytuj zespół",
+    "Edit team"
   ],
   "Название команды": [
     "Komandos pavadinimas",
-    "Nazwa zespołu"
+    "Nazwa zespołu",
+    "Team name"
   ],
   "Работники команды": [
     "Komandos darbuotojai",
-    "Pracownicy zespołu"
+    "Pracownicy zespołu",
+    "Team employees"
   ],
   "В команде пока нет работников.": [
     "Komandoje dar nėra darbuotojų.",
-    "W zespole nie ma jeszcze pracowników."
+    "W zespole nie ma jeszcze pracowników.",
+    "No employees in this team yet."
   ],
   "У работника одна команда в каждом проекте. При выборе работника из другой команды он будет перенесён в эту команду.": [
     "Darbuotojas kiekviename projekte priklauso vienai komandai. Pasirinkus darbuotoją iš kitos komandos, jis bus perkeltas į šią komandą.",
-    "Pracownik należy do jednego zespołu w każdym projekcie. Wybranie pracownika z innego zespołu przeniesie go do tego zespołu."
+    "Pracownik należy do jednego zespołu w każdym projekcie. Wybranie pracownika z innego zespołu przeniesie go do tego zespołu.",
+    "Each employee belongs to one team per project. Selecting an employee from another team moves them to this team."
   ],
   "Сначала создайте активный проект.": [
     "Pirmiausia sukurkite aktyvų projektą.",
-    "Najpierw utwórz aktywny projekt."
+    "Najpierw utwórz aktywny projekt.",
+    "Create an active project first."
   ],
   "Команда относится к другому проекту.": [
     "Komanda priklauso kitam projektui.",
-    "Zespół należy do innego projektu."
+    "Zespół należy do innego projektu.",
+    "This team belongs to another project."
   ],
   "Назначение команды изменилось. Обновите данные.": [
     "Komandos priskyrimas pasikeitė. Atnaujinkite duomenis.",
-    "Przydział do zespołu się zmienił. Odśwież dane."
+    "Przydział do zespołu się zmienił. Odśwież dane.",
+    "The team assignment has changed. Refresh data."
   ],
   "Некорректный список работников команды.": [
     "Neteisingas komandos darbuotojų sąrašas.",
-    "Nieprawidłowa lista pracowników zespołu."
+    "Nieprawidłowa lista pracowników zespołu.",
+    "Invalid team employee list."
   ],
   "Выберите работников команды.": [
     "Pasirinkite komandos darbuotojus.",
-    "Wybierz pracowników zespołu."
+    "Wybierz pracowników zespołu.",
+    "Select team employees."
   ],
   "Некорректное назначение работника.": [
     "Neteisingas darbuotojo priskyrimas.",
-    "Nieprawidłowy przydział pracownika."
+    "Nieprawidłowy przydział pracownika.",
+    "Invalid employee assignment."
   ],
   "Назначение команды": [
     "Komandos priskyrimas",
-    "Przydział do zespołu"
+    "Przydział do zespołu",
+    "Team assignment"
   ],
   "Создание команды": [
     "Komandos sukūrimas",
-    "Utworzenie zespołu"
+    "Utworzenie zespołu",
+    "Team creation"
   ],
   "Изменение команды": [
     "Komandos pakeitimas",
-    "Zmiana zespołu"
+    "Zmiana zespołu",
+    "Team update"
   ],
   "Создать учётную запись": [
     "Sukurti paskyrą",
-    "Utwórz konto"
+    "Utwórz konto",
+    "Create account"
   ],
   "Учётные записи создаются только для руководителей проектов и секретарей. Работники не имеют доступа к системе.": [
     "Paskyros kuriamos tik projektų vadovams ir sekretoriams. Darbuotojai neturi prieigos prie sistemos.",
-    "Konta tworzy się tylko dla kierowników projektów i sekretarzy. Pracownicy nie mają dostępu do systemu."
+    "Konta tworzy się tylko dla kierowników projektów i sekretarzy. Pracownicy nie mają dostępu do systemu.",
+    "Accounts are created only for project managers and secretaries. Employees do not have system access."
   ],
   "Добавить в команду": [
     "Pridėti į komandą",
-    "Dodaj do zespołu"
+    "Dodaj do zespołu",
+    "Add to team"
   ],
   "Удалить команду": [
     "Pašalinti komandą",
-    "Usuń zespół"
+    "Usuń zespół",
+    "Delete team"
   ],
   "Удалить команду, оставить работников на объекте": [
     "Pašalinti komandą, palikti darbuotojus objekte",
-    "Usuń zespół, pozostaw pracowników na obiekcie"
+    "Usuń zespół, pozostaw pracowników na obiekcie",
+    "Delete team and keep employees on site"
   ],
   "Удалить команду и убрать работников из проекта": [
     "Pašalinti komandą ir darbuotojų priskyrimus projektui",
-    "Usuń zespół i przydziały pracowników do projektu"
+    "Usuń zespół i przydziały pracowników do projektu",
+    "Delete team and remove employees from the project"
   ],
   "Карточки работников и история сохранятся при любом варианте.": [
     "Darbuotojų kortelės ir istorija išsaugomos abiem atvejais.",
-    "Karty pracowników i historia zostaną zachowane w obu wariantach."
+    "Karty pracowników i historia zostaną zachowane w obu wariantach.",
+    "Employee cards and history are preserved in either case."
   ],
   "Что сделать с работниками": [
     "Ką daryti su darbuotojais",
-    "Co zrobić z pracownikami"
+    "Co zrobić z pracownikami",
+    "What to do with employees"
   ],
   "Назначение работника на этот проект неактивно.": [
     "Darbuotojo priskyrimas šiam projektui neaktyvus.",
-    "Przydział pracownika do tego projektu jest nieaktywny."
+    "Przydział pracownika do tego projektu jest nieaktywny.",
+    "The employee's assignment to this project is inactive."
   ],
   "Назначение активно": [
     "Priskyrimas aktyvus",
-    "Przydział aktywny"
+    "Przydział aktywny",
+    "Assignment active"
   ],
   "Неактивное назначение": [
     "Neaktyvus priskyrimas",
-    "Nieaktywny przydział"
+    "Nieaktywny przydział",
+    "Inactive assignment"
   ],
   "Отключение назначения": [
     "Priskyrimo išjungimas",
-    "Wyłączenie przydziału"
+    "Wyłączenie przydziału",
+    "Assignment deactivation"
   ],
   "Удаление команды": [
     "Komandos pašalinimas",
-    "Usunięcie zespołu"
+    "Usunięcie zespołu",
+    "Team deletion"
   ],
   "Команда удалена.": [
     "Komanda pašalinta.",
-    "Zespół usunięty."
+    "Zespół usunięty.",
+    "Team deleted."
   ],
   "Команда уже удалена.": [
     "Komanda jau pašalinta.",
-    "Zespół został już usunięty."
+    "Zespół został już usunięty.",
+    "The team has already been deleted."
   ],
   "Выберите способ удаления команды.": [
     "Pasirinkite komandos pašalinimo būdą.",
-    "Wybierz sposób usunięcia zespołu."
+    "Wybierz sposób usunięcia zespołu.",
+    "Choose how to delete the team."
   ],
   "На объекте по дням": [
     "Objekte kiekvieną dieną",
-    "Na obiekcie każdego dnia"
+    "Na obiekcie każdego dnia",
+    "On site by day"
   ],
   "На объекте": [
     "Objekte",
-    "Na obiekcie"
+    "Na obiekcie",
+    "On site"
   ],
   "Роль работника": [
     "Darbuotojo vaidmuo",
-    "Rola pracownika"
+    "Rola pracownika",
+    "Employee role"
   ],
   "Неизвестная роль работника.": [
     "Nežinomas darbuotojo vaidmuo.",
-    "Nieznana rola pracownika."
+    "Nieznana rola pracownika.",
+    "Unknown employee role."
   ],
   "Светлая тема": [
     "Šviesi tema",
-    "Jasny motyw"
+    "Jasny motyw",
+    "Light theme"
   ],
   "Тёмная тема": [
     "Tamsi tema",
-    "Ciemny motyw"
+    "Ciemny motyw",
+    "Dark theme"
   ],
   "Добавить работника в проект": [
     "Pridėti darbuotoją į projektą",
-    "Dodaj pracownika do projektu"
+    "Dodaj pracownika do projektu",
+    "Add employee to project"
   ],
   "Выбрать из списка работников": [
     "Pasirinkti iš darbuotojų sąrašo",
-    "Wybierz z listy pracowników"
+    "Wybierz z listy pracowników",
+    "Select from employee list"
   ],
   "Создать карточку работника": [
     "Sukurti darbuotojo kortelę",
-    "Utwórz kartę pracownika"
+    "Utwórz kartę pracownika",
+    "Create employee card"
+  ],
+  "Свернуть меню": [
+    "Suskleisti meniu",
+    "Zwiń menu",
+    "Collapse menu"
+  ],
+  "Развернуть меню": [
+    "Išskleisti meniu",
+    "Rozwiń menu",
+    "Expand menu"
   ]
 };
 const translationKeys=Object.keys(UI_TRANSLATIONS).sort((a,b)=>b.length-a.length);
 const translationPatterns=translationKeys.map(key=>{const escaped=key.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');return [key,new RegExp('(?<![\\p{L}])'+escaped+'(?![\\p{L}])','gu')]});
 function translateText(value){
  if(language==='ru'||!/[А-Яа-яЁё]/.test(value))return value;
- const index=language==='lt'?0:1;
+ const index={lt:0,pl:1,en:2}[language];
  let protectedValues=[];
  if(typeof state!=='undefined'&&state){for(const entity of [...state.projects,...state.employees,...state.sites,...state.users,...state.events,...(state.teams||[])])for(const [key,v] of Object.entries(entity))if(['name','first_name','last_name','specialty','contact','notes','city','country','address','site_name','route','flight','username'].includes(key)&&typeof v==='string'&&v)protectedValues.push(v);for(const employee of state.employees)protectedValues.push(employee.first_name+' '+employee.last_name)}
  protectedValues=[...new Set(protectedValues)].sort((a,b)=>b.length-a.length);
@@ -1630,7 +2244,7 @@ function translateUI(root=document.body){
  while((node=walker.nextNode())){if(['SCRIPT','STYLE','TEXTAREA'].includes(node.parentElement?.tagName)||node.parentElement?.closest?.('.feedback-text'))continue;let next=translateText(node.nodeValue);if(next!==node.nodeValue)node.nodeValue=next}
  for(const el of root.querySelectorAll('[title],[placeholder],[aria-label]'))for(const attr of ['title','placeholder','aria-label'])if(el.hasAttribute(attr)){let v=el.getAttribute(attr),next=translateText(v);if(v!==next)el.setAttribute(attr,next)}
  document.documentElement.lang=language;
- document.title='BSW ROTACIJA · BETA testing';
+ document.title='BSW ROTACIJA'+(typeof appVersion!=='undefined'&&appVersion?' · v'+appVersion:'')+' · BETA testing';
 }
 document.addEventListener('change',event=>{if(!event.target.matches('[data-language]'))return;language=event.target.value;localStorage.setItem('rotations-language',language);closeModal();render();translateUI()});
 new MutationObserver(()=>translateUI()).observe(document.body,{childList:true,subtree:true,characterData:true});

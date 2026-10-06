@@ -23,14 +23,15 @@ MONTHS=['Январь','Февраль','Март','Апрель','Май','Ию
 
 def export(conn,user,data):
     language=data.get('language','ru')
-    if language not in ('ru','lt','pl'):raise Problem('Неизвестный язык.')
+    if language not in ('ru','lt','pl','en'):raise Problem('Неизвестный язык.')
     translations=json.loads((Path(__file__).parent/'static/translations.json').read_text())
-    def tr(value):return translations.get(value,[value,value])[0 if language=='lt' else 1] if language!='ru' else value
+    def tr(value):return translations.get(value,[value,value,value])[{'lt':0,'pl':1,'en':2}[language]] if language!='ru' else value
     labels={key:tr(value) for key,value in LABELS.items()}
     event_labels={key:tr(value) for key,value in EVENT_LABELS.items()}
     months=[tr(value) for value in MONTHS]
-    codes=CODES if language=='ru' else (dict(work='D',rest='P',vacation='A',sick='N') if language=='lt' else dict(work='P',rest='O',vacation='U',sick='Z'))
+    codes=CODES if language=='ru' else (dict(work='D',rest='P',vacation='A',sick='N') if language=='lt' else dict(work='W',rest='R',vacation='V',sick='S') if language=='en' else dict(work='P',rest='O',vacation='U',sick='Z'))
     extra={
+        'en':{'footer':'Dates inclusive · Sat/Sun are weekends · Icons show transport, E marks another event','page':'Page','worker':'Employee / specialty','details':'Notes and events','continued':'Notes and events - continued','week':'W','flight':'F','event':'E'},
         'ru':{'footer':'Даты включительно · Сб/Вс — календарные выходные · Значки — транспорт, С — другое событие','page':'Страница','worker':'Работник / специальность','details':'Примечания и события','continued':'Примечания и события — продолжение','week':'W','flight':'П','event':'С'},
         'lt':{'footer':'Datos įskaitytinai · Št/Sk — savaitgaliai · Piktogramos — transportas, Į — kitas įvykis','page':'Puslapis','worker':'Darbuotojas / specialybė','details':'Pastabos ir įvykiai','continued':'Pastabos ir įvykiai — tęsinys','week':'W','flight':'S','event':'Į'},
         'pl':{'footer':'Daty włącznie · Sb/Nd — weekendy · Ikony — transport, W — inne wydarzenie','page':'Strona','worker':'Pracownik / specjalność','details':'Notatki i wydarzenia','continued':'Notatki i wydarzenia — ciąg dalszy','week':'W','flight':'L','event':'W'},
@@ -146,11 +147,15 @@ def export(conn,user,data):
                 label=months[dates[j].month-1]+' '+str(dates[j].year) if level==0 else extra['week']+str(dates[j].isocalendar().week)
                 if level==0 and (k-j)*cell<70:label=months[dates[j].month-1][:3]
                 text(grid_x+j*cell+3,y-13-level*17,clipped(label,(k-j)*cell-5,8),8)
+                c.setStrokeColor(HexColor('#b7c3d1'));c.setLineWidth(.5)
+                c.rect(grid_x+j*cell,y-18*(level+1),(k-j)*cell,18,fill=0,stroke=1)
                 j=k
         for j,d in enumerate(dates):
             if d.weekday()>=5:
                 c.setFillColor(HexColor('#e1e6ee'));c.rect(grid_x+j*cell,y-54,cell,18,fill=1,stroke=0)
             text(grid_x+j*cell+cell/2-5,y-48,d.day,8)
+            c.setStrokeColor(HexColor('#b7c3d1'));c.setLineWidth(.5)
+            c.rect(grid_x+j*cell,y-54,cell,18,fill=0,stroke=1)
         row_y=y-54
         for i,e in enumerate(group):
             row_height=e['_row_height'];row_y-=row_height

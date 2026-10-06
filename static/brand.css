@@ -36,3 +36,29 @@ h1,h2,h3{color:inherit}.page-head h1{font-weight:700;letter-spacing:-.8px}.subhe
 .feedback-fab{position:fixed;right:24px;bottom:24px;z-index:60;width:50px;height:50px;border-radius:50%;padding:0;background:var(--bsw-red);border-color:var(--bsw-red);color:white;box-shadow:0 4px 20px #21212430}.feedback-fab .i{width:24px;height:24px}.feedback-fab:hover{background:#bc181e;border-color:#bc181e}.workspace{padding-bottom:90px}.feedback-preview,.feedback-screenshot{display:block;max-width:100%;max-height:55vh;object-fit:contain;border:1px solid var(--border);border-radius:6px;margin:8px auto 16px}.feedback-list{display:grid;gap:14px}.feedback-card-top{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.feedback-card-top time{margin-left:auto;font-size:11px;color:var(--muted)}.feedback-card .pill{display:inline-block}.feedback-bug{background:#fff0f0;color:#bd2830}.feedback-status{font-size:11px;color:var(--muted)}.feedback-status.is-new{color:#d52830;font-weight:600}.feedback-author{font-size:12px;color:var(--muted);margin-top:14px}.feedback-text{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.65;color:inherit!important}.feedback-card .feedback-text{max-height:120px;overflow:auto}.feedback-intro{margin-top:0;color:var(--muted)}[data-theme=dark] .feedback-fab{background:var(--bsw-red);border-color:var(--bsw-red);color:#fff}[data-theme=dark] .feedback-fab:hover{background:#bc181e}[data-theme=dark] .feedback-bug{background:#44282e;color:#ff989e}[data-theme=dark] .feedback-status.is-new{color:#ff989e}@media(max-width:760px){.feedback-fab{right:16px;bottom:16px;width:46px;height:46px}}
 
 .employee-photo{display:block;width:100%;height:100%;object-fit:cover;border-radius:50%}.avatar:has(.employee-photo){overflow:hidden}.employee-photo-editor{display:flex;gap:20px;align-items:center;margin-bottom:24px;padding-bottom:22px;border-bottom:1px solid var(--border)}.employee-photo-editor .avatar{width:88px;height:88px;border-radius:50%;font-size:24px}.employee-photo-editor .avatar .i{width:30px;height:30px}.employee-photo-editor>div:last-child{min-width:0;flex:1}.employee-photo-editor input{max-width:100%;font-size:12px}.employee-photo-editor small{display:block;margin:8px 0}.employee-photo-editor button{min-height:28px;font-size:11px;padding:4px 8px}@media(max-width:480px){.employee-photo-editor{align-items:flex-start;gap:12px}.employee-photo-editor .avatar{width:64px;height:64px}}
+.sidebar-toggle{align-self:flex-end;width:34px;height:32px;padding:6px;margin:-12px 0 16px;background:transparent;border:1px solid #45454c;color:#d6d6dc;flex-shrink:0}
+.sidebar-toggle:hover{background:#35353c;color:white}
+.sidebar{overflow-y:auto;overflow-x:hidden}
+@media(prefers-reduced-motion:no-preference){
+ .sidebar{transition:width .25s ease,padding-left .25s ease,padding-right .25s ease}
+ .workspace{transition:margin-left .25s ease,width .25s ease}
+ .sidebar .bsw-logo{transition:width .25s ease}
+ [data-sidebar=expanded] .sidebar .brand-copy,[data-sidebar=expanded] .navbtn>span,[data-sidebar=expanded] .navlabel,[data-sidebar=expanded] .sidebar-note,[data-sidebar=expanded] .profile,[data-sidebar=expanded] .profile-actions{animation:sidebar-label-reveal .18s ease .07s both}
+}
+@keyframes sidebar-label-reveal{from{opacity:0;transform:translateX(-5px)}to{opacity:1;transform:translateX(0)}}
+[data-sidebar=collapsed] .sidebar{width:65px;padding-left:7px;padding-right:7px}
+[data-sidebar=collapsed] .sidebar-toggle{align-self:center}
+[data-sidebar=collapsed] .sidebar .brand{padding:0 3px 25px;justify-content:center}
+[data-sidebar=collapsed] .sidebar .bsw-logo{width:43px}
+[data-sidebar=collapsed] .sidebar .brand-copy,[data-sidebar=collapsed] .navbtn>span,[data-sidebar=collapsed] .navlabel,[data-sidebar=collapsed] .sidebar-note,[data-sidebar=collapsed] .profile,[data-sidebar=collapsed] .profile-actions{display:none}
+[data-sidebar=collapsed] .navbtn{padding:12px;justify-content:center}
+[data-sidebar=collapsed] .workspace{margin-left:65px;width:calc(100% - 65px)}
+@media(max-width:760px){
+ [data-sidebar=expanded] .sidebar{width:215px;padding-left:16px;padding-right:16px}
+ [data-sidebar=expanded] .workspace{margin-left:215px;width:calc(100% - 215px)}
+ [data-sidebar=expanded] .sidebar .brand-copy,[data-sidebar=expanded] .navbtn>span,[data-sidebar=expanded] .navlabel,[data-sidebar=expanded] .sidebar-note{display:block}
+ [data-sidebar=expanded] .profile,[data-sidebar=expanded] .profile-actions{display:flex}
+ [data-sidebar=expanded] .navbtn{justify-content:flex-start}
+}
+
+.version-badge{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:0;white-space:nowrap}.product-heading .version-badge{font-size:13px}
