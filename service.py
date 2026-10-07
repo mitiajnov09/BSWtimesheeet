@@ -1,4 +1,4 @@
-import hashlib, json, re, secrets, time
+import hashlib, json, re, secrets, time, threading
 from datetime import timedelta
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from db import ROOT, rows, insert, audit, password_hash, password_matches
@@ -55,29 +55,63 @@ def employee_periods(conn,id):return rows(conn,'SELECT * FROM periods WHERE empl
 def employee_assignments(conn,id):return rows(conn,'SELECT * FROM assignments WHERE employee_id=?',(id,))
 def bump(conn,id):conn.execute('UPDATE employees SET schedule_version=schedule_version+1 WHERE id=?',(id,))
 
+LOGIN_FAILURE_LIMIT=5
+LOGIN_BLOCK_SECONDS=600
+LOGIN_SOURCE_LIMIT=30
+LOGIN_GLOBAL_LIMIT=100
+LOGIN_BUDGET_WINDOW=60
+_login_slots=threading.BoundedSemaphore(4)
+
+def login_block(seconds=LOGIN_BLOCK_SECONDS):
+    error=Problem('Слишком много попыток. Вход заблокирован на 10 минут.',429)
+    error.retry_after=max(1,int(seconds))
+    return error
+
 def login(conn,data,client_key):
-    now=int(time.time())
-    username=required(data,'username')
-    password=data.get('password','')
+    username=required(data,'username');password=data.get('password','')
     if not isinstance(password,str) or len(password)>256:raise Problem('Неверный логин или пароль.',401)
-    key=hashlib.sha256((client_key+'|'+username).encode()).hexdigest()
-    limit=conn.execute('SELECT * FROM login_attempts WHERE key=?',(key,)).fetchone()
-    if limit and limit['reset_at']>now and limit['attempts']>=10:raise Problem('Слишком много попыток. Повторите через 15 минут.',429)
-    user=conn.execute('SELECT * FROM users WHERE username=?',(username,)).fetchone()
-    # Do the same expensive hash operation for nonexistent users.
-    stored=user['password_hash'] if user else 'scrypt$'+'00'*16+'$'+'00'*64
-    valid=password_matches(password,stored)
-    if not valid or not user or not user['active']:
-        count=limit['attempts']+1 if limit and limit['reset_at']>now else 1
-        conn.execute('INSERT OR REPLACE INTO login_attempts VALUES(?,?,?)',(key,count,now+900 if not limit or limit['reset_at']<=now else limit['reset_at']))
+    if not _login_slots.acquire(blocking=False):
+        error=Problem('Сервис входа занят. Повторите позже.',503);error.retry_after=1;raise error
+    account_key=hashlib.sha256(('account|'+username.casefold()).encode()).hexdigest()
+    budget_keys=[(hashlib.sha256(('source|'+client_key).encode()).hexdigest(),LOGIN_SOURCE_LIMIT),('global-login-budget',LOGIN_GLOBAL_LIMIT)]
+    try:
+        now=int(time.time())
+        if conn.in_transaction:conn.commit()
+        conn.execute('BEGIN IMMEDIATE')
+        conn.execute('DELETE FROM login_attempts WHERE reset_at<=?',(now,))
+        limit=conn.execute('SELECT * FROM login_attempts WHERE key=?',(account_key,)).fetchone()
+        if limit and limit['attempts']>=LOGIN_FAILURE_LIMIT:raise login_block(limit['reset_at']-now)
+        for key,maximum in budget_keys:
+            budget=conn.execute('SELECT * FROM login_attempts WHERE key=?',(key,)).fetchone()
+            if budget and budget['attempts']>=maximum:
+                error=Problem('Слишком много запросов входа. Повторите позже.',429);error.retry_after=budget['reset_at']-now;raise error
+            conn.execute('INSERT OR REPLACE INTO login_attempts VALUES(?,?,?)',(key,budget['attempts']+1 if budget else 1,budget['reset_at'] if budget else now+LOGIN_BUDGET_WINDOW))
+        user=conn.execute('SELECT * FROM users WHERE username=?',(username,)).fetchone()
+        user=dict(user) if user else None
         conn.commit()
-        raise Problem('Неверный логин или пароль.',401)
-    conn.execute('DELETE FROM login_attempts WHERE key=?',(key,))
-    token,csrf=secrets.token_urlsafe(32),secrets.token_urlsafe(24)
-    conn.execute('DELETE FROM sessions WHERE expires<?',(now,))
-    conn.execute('INSERT INTO sessions VALUES(?,?,?,?)',(hashlib.sha256(token.encode()).hexdigest(),user['id'],csrf,now+43200))
-    conn.commit()
-    return {'user':public_user(dict(user)),'csrf':csrf},token
+        stored=user['password_hash'] if user else 'scrypt$'+'00'*16+'$'+'00'*64
+        valid=password_matches(password,stored)
+        # Password hashing runs without the global SQLite writer lock.
+        now=int(time.time());conn.execute('BEGIN IMMEDIATE')
+        current=conn.execute('SELECT * FROM users WHERE username=?',(username,)).fetchone()
+        limit=conn.execute('SELECT * FROM login_attempts WHERE key=?',(account_key,)).fetchone()
+        if limit and limit['reset_at']<=now:limit=None
+        if limit and limit['attempts']>=LOGIN_FAILURE_LIMIT:raise login_block(limit['reset_at']-now)
+        if not valid or not current or not current['active'] or not user or current['password_hash']!=stored:
+            count=limit['attempts']+1 if limit else 1
+            expiry=now+LOGIN_BLOCK_SECONDS if count>=LOGIN_FAILURE_LIMIT or not limit else limit['reset_at']
+            conn.execute('INSERT OR REPLACE INTO login_attempts VALUES(?,?,?)',(account_key,count,expiry));conn.commit()
+            if count>=LOGIN_FAILURE_LIMIT:raise login_block()
+            raise Problem('Неверный логин или пароль.',401)
+        conn.execute('DELETE FROM login_attempts WHERE key=?',(account_key,))
+        token,csrf=secrets.token_urlsafe(32),secrets.token_urlsafe(24)
+        conn.execute('DELETE FROM sessions WHERE expires<?',(now,))
+        conn.execute('INSERT INTO sessions VALUES(?,?,?,?)',(hashlib.sha256(token.encode()).hexdigest(),current['id'],csrf,now+43200));conn.commit()
+        return {'user':public_user(dict(current)),'csrf':csrf},token
+    except Exception:
+        if conn.in_transaction:conn.rollback()
+        raise
+    finally:_login_slots.release()
 
 def public_user(user):return {k:user[k] for k in ('id','username','name','role','active','version')}
 
@@ -172,6 +206,10 @@ def save_admin(conn,user,entity,data):
             assigned=[x for x in employee_assignments(conn,employee['id']) if x['id']!=old['id']]+[changes]
             if any(not any(z['project_id']==ev['project_id'] and z['start']<=ev['date']<=z['end'] for z in assigned) for ev in affected):raise Problem('Даты назначения должны охватывать события работника.',409)
         project_id=project['id']
+    if entity=='employees' and not old:
+        # Deleted IDs remain reserved in audit, preventing stale-card ABA deletes.
+        maximum=conn.execute("SELECT MAX(value) FROM (SELECT COALESCE(MAX(id),0) value FROM employees UNION ALL SELECT COALESCE(MAX(entity_id),0) FROM audit WHERE entity='employees')").fetchone()[0]
+        changes['id']=maximum+1
     id=old['id'] if old else insert(conn,entity,changes)
     new=update(conn,entity,old,changes) if old else get(conn,entity,id)
     if entity=='projects':
@@ -295,7 +333,20 @@ def save_event(conn,user,data):
     audit(conn,user,'Изменение события' if old else 'Создание события','events',id,old,new,pid)
     return new
 
+def delete_employee(conn,user,data):
+    admin(user);employee=get(conn,'employees',data.get('id'));check_version(employee,data)
+    check_version(employee,data,'schedule_version')
+    if data.get('confirm')!='DELETE':raise Problem('Подтвердите окончательное удаление работника.')
+    counts={}
+    for table in ('employee_photos','team_members','events','periods','assignments'):
+        counts[table]=conn.execute(f'SELECT count(*) FROM {table} WHERE employee_id=?',(employee['id'],)).fetchone()[0]
+        conn.execute(f'DELETE FROM {table} WHERE employee_id=?',(employee['id'],))
+    conn.execute('DELETE FROM employees WHERE id=?',(employee['id'],))
+    audit(conn,user,'Окончательное удаление работника','employees',employee['id'],{'id':employee['id'],'first_name':employee['first_name'],'last_name':employee['last_name']},{'deleted':True,'related_records':counts})
+    return {'ok':True}
+
 def remove(conn,user,entity,data):
+    if entity=='employees':return delete_employee(conn,user,data)
     if entity=='teams':return remove_team(conn,user,data)
     if entity not in ('periods','events'):raise Problem('Удаление недоступно. Используйте архивирование.',400)
     old=get(conn,entity,data.get('id'))

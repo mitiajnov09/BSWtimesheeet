@@ -1,4 +1,4 @@
-import io, math, json
+import io, math, json, logging, warnings
 from datetime import timedelta
 from pathlib import Path
 from reportlab.pdfgen import canvas
@@ -165,15 +165,26 @@ def export(conn,user,data):
             c.setFillColor(white if i%2==0 else HexColor('#f7f9fb'));c.rect(margin,row_y,width-2*margin,row_height,fill=1,stroke=0)
             if include_photos:
                 photo_x=margin+7;photo_y=row_y+row_height-40
+                photo_rendered=False
                 if e['_photo']:
-                    with Image.open(io.BytesIO(e['_photo'])) as portrait:
-                        upright=ImageOps.exif_transpose(portrait)
-                        c.saveState()
-                        clip=c.beginPath();clip.circle(photo_x+15,photo_y+16,15);c.clipPath(clip,stroke=0,fill=0)
-                        scale=max(30/upright.width,30/upright.height);w,h=upright.width*scale,upright.height*scale
-                        c.drawImage(ImageReader(upright),photo_x+15-w/2,photo_y+16-h/2,width=w,height=h,mask='auto')
-                        c.restoreState()
-                else:
+                    try:
+                        with warnings.catch_warnings():
+                            warnings.simplefilter('error',Image.DecompressionBombWarning)
+                            with Image.open(io.BytesIO(e['_photo'])) as portrait:
+                                if portrait.width*portrait.height>20_000_000:raise ValueError('Oversized stored portrait')
+                                portrait.load()
+                                upright=ImageOps.exif_transpose(portrait)
+                                upright.thumbnail((1024,1024),Image.Resampling.LANCZOS)
+                                c.saveState()
+                                try:
+                                    clip=c.beginPath();clip.circle(photo_x+15,photo_y+16,15);c.clipPath(clip,stroke=0,fill=0)
+                                    scale=max(30/upright.width,30/upright.height);w,h=upright.width*scale,upright.height*scale
+                                    c.drawImage(ImageReader(upright),photo_x+15-w/2,photo_y+16-h/2,width=w,height=h,mask='auto')
+                                    photo_rendered=True
+                                finally:c.restoreState()
+                    except (OSError,ValueError,SyntaxError,EOFError,Image.DecompressionBombError,Image.DecompressionBombWarning):
+                        logging.warning('Skipping invalid stored employee portrait during PDF export')
+                if not photo_rendered:
                     c.setFillColor(HexColor('#edf0f4'));c.circle(photo_x+15,photo_y+16,15,stroke=0,fill=1)
                     text(photo_x+5,photo_y+12,e['first_name'][0]+e['last_name'][0],8,'#7d8796')
             name_y=row_y+row_height-14

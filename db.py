@@ -22,7 +22,13 @@ def password_matches(password, stored):
 
 def connect(path=None):
     path=path or os.getenv('APP_DB',str(ROOT/'data/rotations.sqlite3'))
-    Path(path).parent.mkdir(parents=True,exist_ok=True)
+    Path(path).parent.mkdir(parents=True,mode=0o700,exist_ok=True)
+    # Create private database files without a process-wide umask race.
+    if path!=':memory:':
+        try:
+            fd=os.open(path,os.O_CREAT|os.O_EXCL|os.O_RDWR,0o600);os.close(fd)
+        except FileExistsError:pass
+        os.chmod(path,0o600)
     conn=sqlite3.connect(path,timeout=15)
     conn.row_factory=sqlite3.Row
     conn.execute('PRAGMA foreign_keys=ON')

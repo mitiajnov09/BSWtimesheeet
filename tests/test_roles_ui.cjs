@@ -109,3 +109,13 @@ assert.match(node('#modal-root').innerHTML,/value="sick"/);
 assert.doesNotMatch(node('#modal-root').innerHTML,/value="vacation"/);
 vm.runInContext("setRoleView('admin')",context);
 console.log('Planning supports searchable checkbox selection and group cycle/period forms');
+
+fixture.user.role='admin';vm.runInContext("setRoleView('admin');openEmployee(1)",context);
+assert.match(node('#modal-root').innerHTML,/data-act="delete-employee-card"/);
+vm.runInContext("modalActions['delete-employee-card']()",context);
+assert.match(node('#modal-root').innerHTML,/pattern="DELETE"/);
+assert.match(node('#modal-root').innerHTML,/без возможности восстановления/);
+fixture.user.role='manager';vm.runInContext('openEmployee(1)',context);
+assert.doesNotMatch(node('#modal-root').innerHTML,/delete-employee-card/);
+fixture.user.role='admin';
+console.log('Permanent employee deletion requires admin and explicit DELETE confirmation');

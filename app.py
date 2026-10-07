@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Local/production HTTP app. Bind behind HTTPS reverse proxy for deployment."""
-import argparse, hashlib, json, logging, os, secrets, sqlite3
+import argparse, hashlib, json, logging, os, secrets, sqlite3, threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from http.cookies import SimpleCookie
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import urlparse, parse_qs
 from db import ROOT, connect, migrate, seed, insert, password_hash, audit
 from domain import Problem
 import service
@@ -21,16 +21,38 @@ def load_environment():
             if line.strip() and not line.lstrip().startswith('#') and '=' in line:
                 k,v=line.split('=',1);os.environ.setdefault(k.strip(),v.strip().strip('"').strip("'"))
 
+class BoundedHTTPServer(ThreadingHTTPServer):
+    def __init__(self,*args,max_workers=64,**kwargs):
+        self.request_slots=threading.BoundedSemaphore(max_workers)
+        super().__init__(*args,**kwargs)
+    def process_request(self,request,client_address):
+        if not self.request_slots.acquire(blocking=False):
+            try:
+                request.settimeout(1)
+                request.sendall(b'HTTP/1.0 503 Service Unavailable\r\nContent-Length: 0\r\nConnection: close\r\nRetry-After: 1\r\n\r\n')
+            except OSError:pass
+            finally:self.shutdown_request(request)
+            return
+        try:super().process_request(request,client_address)
+        except Exception:self.request_slots.release();raise
+    def process_request_thread(self,request,client_address):
+        try:super().process_request_thread(request,client_address)
+        finally:self.request_slots.release()
+
 class Handler(BaseHTTPRequestHandler):
     server_version='Rotations'
+    request_timeout=10
+    def setup(self):
+        super().setup();self.connection.settimeout(self.request_timeout)
     def log_message(self,format,*args):logging.info('%s %s',self.address_string(),format%args)
-    def respond(self,status,payload,content_type='application/json; charset=utf-8',cookie=None,filename=None):
+    def respond(self,status,payload,content_type='application/json; charset=utf-8',cookie=None,filename=None,retry_after=None):
         if not isinstance(payload,bytes):payload=json.dumps(payload,ensure_ascii=False).encode()
         self.send_response(status)
         self.send_header('Content-Type',content_type);self.send_header('Content-Length',str(len(payload)))
         self.send_header('Cache-Control','no-store' if self.path.startswith('/api/') else 'no-cache')
         self.send_header('X-Content-Type-Options','nosniff');self.send_header('Referrer-Policy','same-origin')
         self.send_header('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'")
+        if retry_after is not None:self.send_header('Retry-After',str(max(1,int(retry_after))))
         if cookie:self.send_header('Set-Cookie',cookie)
         if filename:self.send_header('Content-Disposition','attachment; filename="'+filename+'"')
         self.end_headers();self.wfile.write(payload)
@@ -39,10 +61,12 @@ class Handler(BaseHTTPRequestHandler):
         try:
             length=int(self.headers.get('Content-Length','0'))
             if not 0<length<=(6000000 if urlparse(self.path).path in ('/api/feedback','/api/employees') else 1000000):raise Problem('Неверный размер запроса.',413)
-            data=json.loads(self.rfile.read(length))
+            body=self.rfile.read(length)
+            if len(body)!=length:raise ValueError()
+            data=json.loads(body)
             if not isinstance(data,dict):raise ValueError()
             return data
-        except (ValueError,json.JSONDecodeError):raise Problem('Некорректный запрос.')
+        except (ValueError,json.JSONDecodeError,RecursionError):raise Problem('Некорректный запрос.')
     def session_token(self):
         try:
             cookie=SimpleCookie(self.headers.get('Cookie',''));return cookie['rotation_session'].value if 'rotation_session' in cookie else ''
@@ -68,7 +92,6 @@ class Handler(BaseHTTPRequestHandler):
                 expected=os.getenv('APP_ORIGIN','http://127.0.0.1:'+os.getenv('APP_PORT','8080'))
                 if origin and origin!=expected:raise Problem('Источник запроса не разрешён.',403)
             if path=='/api/login' and method=='POST':
-                conn.execute('BEGIN IMMEDIATE')
                 result,token=service.login(conn,data,self.client_address[0]);return self.respond(200,result,cookie=self.cookie(token))
             user=service.authenticate(conn,self.session_token())
             if method!='GET' and not secrets.compare_digest(self.headers.get('X-CSRF-Token',''),user['csrf']):raise Problem('Сессия устарела. Обновите страницу.',403)
@@ -77,7 +100,9 @@ class Handler(BaseHTTPRequestHandler):
                 parts=path.split('/')
                 if len(parts)!=5 or not parts[3].isdigit():raise Problem('Маршрут не найден.',404)
                 image,mime=photos.get_photo(conn,user,int(parts[3]));return self.respond(200,image,mime)
-            if method=='GET' and path=='/api/feedback':return self.respond(200,feedback.inbox(conn,user))
+            if method=='GET' and path=='/api/feedback':
+                query=parse_qs(urlparse(self.path).query)
+                return self.respond(200,feedback.inbox(conn,user,page=query.get('page',['1'])[0],status=query.get('status',[''])[0]))
             if method=='GET' and path.startswith('/api/feedback/') and path.endswith('/screenshot'):
                 parts=path.split('/')
                 if len(parts)!=5 or not parts[3].isdigit():raise Problem('Маршрут не найден.',404)
@@ -99,7 +124,8 @@ class Handler(BaseHTTPRequestHandler):
                 audit(conn,user,'Смена пароля','users',user['id'],None,{'password_changed':True});conn.commit()
                 return self.respond(200,{'ok':True},cookie=self.cookie('',True))
             entity=path.removeprefix('/api/')
-            if method=='DELETE':result=service.remove(conn,user,entity,data)
+            if method=='DELETE' and entity=='feedback':result=feedback.remove(conn,user,data)
+            elif method=='DELETE':result=service.remove(conn,user,entity,data)
             elif entity=='periods':result=service.save_period(conn,user,data)
             elif entity=='cycle':result=service.cycle(conn,user,data)
             elif entity=='schedule-batch':result=service.save_schedule_batch(conn,user,data)
@@ -110,7 +136,10 @@ class Handler(BaseHTTPRequestHandler):
             conn.commit();return self.respond(200,result)
         except Problem as error:
             if conn:conn.rollback()
-            self.respond(error.status,{'error':str(error)})
+            self.respond(error.status,{'error':str(error)},retry_after=getattr(error,'retry_after',None))
+        except TimeoutError:
+            if conn:conn.rollback()
+            self.respond(408,{'error':'Время ожидания запроса истекло.'})
         except sqlite3.IntegrityError:
             if conn:conn.rollback()
             self.respond(409,{'error':'Такая запись уже существует или связанная запись недоступна.'})
@@ -152,4 +181,4 @@ if __name__=='__main__':
     logging.basicConfig(level=logging.INFO,format='%(asctime)s %(levelname)s %(message)s')
     host=os.getenv('APP_HOST','127.0.0.1');port=int(os.getenv('APP_PORT','8080'))
     print(f'Ротации: http://{host}:{port}',flush=True)
-    ThreadingHTTPServer((host,port),Handler).serve_forever()
+    BoundedHTTPServer((host,port),Handler).serve_forever()

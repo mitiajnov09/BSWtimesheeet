@@ -226,7 +226,7 @@ class DatabaseTests(unittest.TestCase):
         with self.assertRaises(Problem) as ctx:service.save_event(self.conn,other,{**event,'transport':'car'})
         self.assertEqual(ctx.exception.status,403)
     def test_migrations_are_idempotent(self):
-        migrate(self.conn);migrate(self.conn);self.assertEqual(self.conn.execute('SELECT count(*) FROM schema_migrations').fetchone()[0],8)
+        migrate(self.conn);migrate(self.conn);self.assertEqual(self.conn.execute('SELECT count(*) FROM schema_migrations').fetchone()[0],9)
 
 class EmployeePhotoTests(unittest.TestCase):
     setUp=DatabaseTests.setUp
@@ -273,7 +273,7 @@ class FeedbackTests(unittest.TestCase):
         image,raw=self.image()
         result=feedback.submit(self.conn,self.manager,dict(kind='bug',message='Ошибка графика',screenshot=image,project_id=1,user_id=1))
         self.conn.commit()
-        records=feedback.inbox(self.conn,self.admin)
+        records=feedback.inbox(self.conn,self.admin)['items']
         self.assertEqual(records[0]['user_id'],self.manager['id']);self.assertEqual(records[0]['has_screenshot'],1)
         self.assertNotIn('screenshot',records[0])
         self.assertEqual(feedback.screenshot(self.conn,self.admin,result['id']),(raw,'image/png'))
@@ -288,7 +288,7 @@ class FeedbackTests(unittest.TestCase):
         payload=dict(id=result['id'],version=1,status='reviewed')
         with self.assertRaises(Problem):feedback.set_status(self.conn,self.manager,payload)
         feedback.set_status(self.conn,self.admin,payload)
-        self.assertEqual(feedback.inbox(self.conn,self.admin)[0]['status'],'reviewed')
+        self.assertEqual(feedback.inbox(self.conn,self.admin)['items'][0]['status'],'reviewed')
         with self.assertRaises(Problem) as ctx:feedback.set_status(self.conn,self.admin,payload)
         self.assertEqual(ctx.exception.status,409)
     def test_invalid_feedback_rejected_without_insert(self):
@@ -454,7 +454,7 @@ class HTTPTests(unittest.TestCase):
         self.assertEqual(self.request('feedback/'+str(record['id'])+'/screenshot',cookie=cookie)[0],403)
         self.assertEqual(self.request('feedback/'+str(record['id'])+'/screenshot',cookie=admin_cookie)[1],raw)
         status,records,_=self.request('feedback',cookie=admin_cookie);self.assertEqual(status,200)
-        self.assertTrue(any(r['id']==record['id'] and r['has_screenshot'] for r in records))
+        self.assertTrue(any(r['id']==record['id'] and r['has_screenshot'] for r in records['items']))
         self.assertEqual(self.request('feedback-status',dict(id=record['id'],version=1,status='reviewed'),cookie,csrf)[0],403)
         self.assertEqual(self.request('feedback-status',dict(id=record['id'],version=1,status='reviewed'),admin_cookie,admin_csrf)[0],200)
     def test_feedback_accepts_screenshot_larger_than_one_megabyte(self):

@@ -2288,5 +2288,110 @@
     "Darbuotojai yra projekto sąraše. Užpildykite grafiką rankiniu būdu.",
     "Pracownicy są na liście projektu. Wypełnij grafik ręcznie.",
     "Employees are on the project list. Fill in the schedule manually."
+  ],
+  "Слишком много попыток. Вход заблокирован на 10 минут.": [
+    "Per daug bandymų. Prisijungimas užblokuotas 10 minučių.",
+    "Zbyt wiele prób. Logowanie zablokowane na 10 minut.",
+    "Too many attempts. Login is blocked for 10 minutes."
+  ],
+  "Сервис входа занят. Повторите позже.": [
+    "Prisijungimo paslauga užimta. Bandykite vėliau.",
+    "Usługa logowania jest zajęta. Spróbuj później.",
+    "Login service is busy. Try again later."
+  ],
+  "Слишком много запросов входа. Повторите позже.": [
+    "Per daug prisijungimo užklausų. Bandykite vėliau.",
+    "Zbyt wiele żądań logowania. Spróbuj później.",
+    "Too many login requests. Try again later."
+  ],
+  "Время ожидания запроса истекло.": [
+    "Užklausos laukimo laikas baigėsi.",
+    "Upłynął limit czasu żądania.",
+    "Request timed out."
+  ],
+  "Удалить карточку": [
+    "Ištrinti kortelę",
+    "Usuń kartę",
+    "Delete employee card"
+  ],
+  "Удалить карточку работника?": [
+    "Ištrinti darbuotojo kortelę?",
+    "Usunąć kartę pracownika?",
+    "Delete employee card?"
+  ],
+  "Карточка, назначения, график, поездки и фотография будут удалены без возможности восстановления. Запись об удалении останется в истории.": [
+    "Kortelė, priskyrimai, grafikas, kelionės ir nuotrauka bus ištrinti negrįžtamai. Ištrynimo įrašas liks istorijoje.",
+    "Karta, przypisania, grafik, podróże i zdjęcie zostaną nieodwracalnie usunięte. Wpis o usunięciu pozostanie w historii.",
+    "The card, assignments, schedule, trips and photo will be permanently deleted. The deletion record will remain in the history."
+  ],
+  "Введите DELETE для подтверждения": [
+    "Patvirtinimui įveskite DELETE",
+    "Wpisz DELETE, aby potwierdzić",
+    "Type DELETE to confirm"
+  ],
+  "Подтвердите окончательное удаление работника.": [
+    "Patvirtinkite negrįžtamą darbuotojo ištrynimą.",
+    "Potwierdź trwałe usunięcie pracownika.",
+    "Confirm permanent employee deletion."
+  ],
+  "Предыдущая страница": [
+    "Ankstesnis puslapis",
+    "Poprzednia strona",
+    "Previous page"
+  ],
+  "Следующая страница": [
+    "Kitas puslapis",
+    "Następna strona",
+    "Next page"
+  ],
+  "Удалить отзыв": [
+    "Ištrinti atsiliepimą",
+    "Usuń opinię",
+    "Delete feedback"
+  ],
+  "Отзыв и скриншот будут удалены без возможности восстановления.": [
+    "Atsiliepimas ir ekrano nuotrauka bus ištrinti negrįžtamai.",
+    "Opinia i zrzut ekranu zostaną nieodwracalnie usunięte.",
+    "Feedback and screenshot will be permanently deleted."
+  ],
+  "Отзыв удалён.": [
+    "Atsiliepimas ištrintas.",
+    "Opinia usunięta.",
+    "Feedback deleted."
+  ],
+  "Можно отправить не более 5 отзывов в час. Повторите позже.": [
+    "Galima siųsti iki 5 atsiliepimų per valandą. Bandykite vėliau.",
+    "Można wysłać do 5 opinii na godzinę. Spróbuj później.",
+    "You can send up to 5 feedback messages per hour. Try again later."
+  ],
+  "Лимит отзывов достигнут. Обратитесь к администратору.": [
+    "Pasiektas atsiliepimų limitas. Kreipkitės į administratorių.",
+    "Osiągnięto limit opinii. Skontaktuj się z administratorem.",
+    "Feedback limit reached. Contact the administrator."
+  ],
+  "Лимит хранения скриншотов достигнут. Отправьте отзыв без скриншота или обратитесь к администратору.": [
+    "Pasiektas ekrano nuotraukų saugojimo limitas. Siųskite atsiliepimą be nuotraukos arba kreipkitės į administratorių.",
+    "Osiągnięto limit przechowywania zrzutów ekranu. Wyślij opinię bez zrzutu lub skontaktuj się z administratorem.",
+    "Screenshot storage limit reached. Send feedback without a screenshot or contact the administrator."
+  ],
+  "Неверная страница отзывов.": [
+    "Neteisingas atsiliepimų puslapis.",
+    "Nieprawidłowa strona opinii.",
+    "Invalid feedback page."
+  ],
+  "Лимит новых отзывов этого пользователя достигнут.": [
+    "Pasiektas šio naudotojo naujų atsiliepimų limitas.",
+    "Osiągnięto limit nowych opinii tego użytkownika.",
+    "New feedback limit reached for this user."
+  ],
+  "Окончательное удаление работника": [
+    "Negrįžtamas darbuotojo ištrynimas",
+    "Trwałe usunięcie pracownika",
+    "Permanent employee deletion"
+  ],
+  "Удаление отзыва": [
+    "Atsiliepimo ištrynimas",
+    "Usunięcie opinii",
+    "Feedback deletion"
   ]
 }

@@ -1,27 +1,48 @@
 """Employee portraits are private, stored alongside roster data in SQLite."""
 import base64,binascii,io,warnings
-from PIL import Image
+from PIL import Image, ImageOps
 from domain import Problem
 from db import audit
 
-def decode(encoded):
-    if not isinstance(encoded,str):raise Problem('Прикрепите корректную фотографию PNG, JPEG или WebP.')
-    if len(encoded)>4*1024*1024*4//3+200:raise Problem('Фотография не должна превышать 4 МБ.',413)
+MAX_IMAGE=4*1024*1024
+MAX_PIXELS=20_000_000
+
+def decode(encoded,label='Фотография',max_dimension=1024):
+    """Fully decode and normalize an upload; discard source metadata and trailing bytes."""
+    invalid='Прикрепите корректный скриншот PNG, JPEG или WebP.' if label=='Скриншот' else 'Прикрепите корректную фотографию PNG, JPEG или WebP.'
+    oversized='Скриншот не должен превышать 4 МБ.' if label=='Скриншот' else 'Фотография не должна превышать 4 МБ.'
+    if not isinstance(encoded,str):raise Problem(invalid)
+    if len(encoded)>MAX_IMAGE*4//3+200:raise Problem(oversized,413)
+    if not isinstance(max_dimension,int) or not 1<=max_dimension<=2560:raise ValueError('Invalid normalization dimension')
     try:
         header,body=encoded.split(',',1)
         if header not in ('data:image/png;base64','data:image/jpeg;base64','data:image/webp;base64'):raise ValueError()
         content=base64.b64decode(body,validate=True)
-        if len(content)>4*1024*1024:raise Problem('Фотография не должна превышать 4 МБ.',413)
+        if len(content)>MAX_IMAGE:raise Problem(oversized,413)
         with warnings.catch_warnings():
             warnings.simplefilter('error',Image.DecompressionBombWarning)
             with Image.open(io.BytesIO(content)) as picture:
-                if picture.width*picture.height>20_000_000:raise ValueError()
+                if picture.width*picture.height>MAX_PIXELS:raise ValueError()
+                image_format=picture.format
                 mime={'PNG':'image/png','JPEG':'image/jpeg','WEBP':'image/webp'}.get(picture.format)
                 if header!='data:'+str(mime)+';base64':raise ValueError()
                 picture.verify()
+            # verify() checks the container; load() also checks compressed pixel data.
+            with Image.open(io.BytesIO(content)) as picture:
+                picture.load()
+                upright=ImageOps.exif_transpose(picture)
+                upright.thumbnail((max_dimension,max_dimension),Image.Resampling.LANCZOS)
+                mode='RGBA' if image_format!='JPEG' and ('A' in upright.getbands() or 'transparency' in upright.info) else 'RGB'
+                # A new image retains only pixels, including no EXIF/ICC/text metadata.
+                normalized=Image.new(mode,upright.size)
+                normalized.paste(upright.convert(mode))
+                output=io.BytesIO()
+                normalized.save(output,format=image_format,**({'quality':90} if image_format in ('JPEG','WEBP') else {}))
+                content=output.getvalue()
+        if len(content)>MAX_IMAGE:raise Problem(oversized,413)
         return content,mime
     except Problem:raise
-    except (ValueError,binascii.Error,OSError,SyntaxError,EOFError,Image.DecompressionBombError,Image.DecompressionBombWarning):raise Problem('Прикрепите корректную фотографию PNG, JPEG или WebP.')
+    except (ValueError,binascii.Error,OSError,SyntaxError,EOFError,Image.DecompressionBombError,Image.DecompressionBombWarning):raise Problem(invalid)
 
 def save(conn,user,employee_id,encoded):
     from service import admin
