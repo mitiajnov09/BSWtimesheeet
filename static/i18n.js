@@ -1,8 +1,8 @@
 'use strict';
 // Only interface strings are translated. Names, notes and other saved data stay intact.
 const LANGUAGE_OPTIONS=[['lt','🇱🇹 LT'],['pl','🇵🇱 PL'],['en','🇬🇧 EN'],['ru','🇷🇺 RU']];
-let language=localStorage.getItem('rotations-language')||'ru';
-if(!LANGUAGE_OPTIONS.some(([code])=>code===language))language='ru';
+let language=localStorage.getItem('rotations-language')||'lt';
+if(!LANGUAGE_OPTIONS.some(([code])=>code===language))language='lt';
 const UI_TRANSLATIONS={
   "Фотография работника": [
     "Darbuotojo nuotrauka",

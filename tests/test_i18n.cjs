@@ -1,6 +1,11 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
 const source=fs.readFileSync('static/i18n.js','utf8').split("document.addEventListener('change'")[0];
 const context={localStorage:{getItem:()=>null}};vm.createContext(context);vm.runInContext('let state=null;'+source,context);
+assert.equal(vm.runInContext('language',context),'lt');
+for(const [saved,expected] of [['en','en'],['pl','pl'],['ru','ru'],['invalid','lt']]){
+ const fresh={localStorage:{getItem:()=>saved}};vm.createContext(fresh);vm.runInContext('let state=null;'+source,fresh);
+ assert.equal(vm.runInContext('language',fresh),expected);
+}
 function translate(lang,value){context.value=value;return vm.runInContext(`language='${lang}';translateText(value)`,context)}
 assert.equal(translate('lt','График ротаций'),'Rotacijų grafikas');assert.equal(translate('pl','График ротаций'),'Grafik rotacji');
 assert.equal(translate('lt','Октябрь 2026'),'Spalis 2026');assert.equal(translate('pl','Неактивные работники'),'Nieaktywni pracownicy');
