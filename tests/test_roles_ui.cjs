@@ -47,7 +47,7 @@ assert.match(node('#modal-root').innerHTML,/<select name="ticket_bought"/);
 fixture.events[0].transport='unknown';fixture.events[0].ticket_bought=0;
 vm.runInContext('render()',context);
 assert.match(node('#calendar').innerHTML,/class="rotation travel-day ticket-pending"/);
-assert.match(node('#calendar').innerHTML,/M12 4v11 M12 20h.01/);
+assert.match(node('#calendar').innerHTML,/M8 7a4 4 0 0 1 8 0c0 3-4 3-4 7 M12 20h.01/);
 assert.match(node('#calendar').innerHTML,/Транспорт не выбран · Билет не куплен/);
 assert.match(node('#content').innerHTML,/data-palette="outbound"[^>]*><svg[\s\S]*?M12 2l2 3v5l8 5/);
 fixture.events[0].transport='car';fixture.events[0].ticket_bought=1;

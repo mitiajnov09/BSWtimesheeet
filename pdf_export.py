@@ -128,7 +128,8 @@ def export(conn,user,data):
             if close:p.close()
             c.drawPath(p,stroke=1,fill=0)
         if transport=='unknown':
-            c.line(12,21,12,8);c.circle(12,3,1,stroke=1,fill=0)
+            p=c.beginPath();p.moveTo(8,17);p.curveTo(8,22,16,22,16,17);p.curveTo(16,13,12,13,12,8)
+            c.drawPath(p,stroke=1,fill=0);c.circle(12,3,1,stroke=1,fill=0)
         elif transport=='car':
             line([(3,5),(21,5),(21,14),(19,14),(17,20),(7,20),(5,14),(3,14)],True)
             c.line(5,14,19,14);c.line(6,10,8,10);c.line(16,10,18,10);c.line(6,5,6,2);c.line(18,5,18,2)
