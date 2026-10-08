@@ -205,7 +205,7 @@ class DatabaseTests(unittest.TestCase):
         self.assertIn(long_last,text);self.assertIn('Работник 36',text)
     def test_travel_transport_defaults_updates_and_preserves_schedule(self):
         event=service.get(self.conn,'events',1)
-        self.assertEqual(event['transport'],'plane')
+        self.assertEqual(event['transport'],'unknown')
         before=service.employee_periods(self.conn,1)
         car=service.save_event(self.conn,self.manager,{**event,'transport':'car'})
         self.assertEqual(service.get(self.conn,'events',1)['transport'],'car')
@@ -226,7 +226,7 @@ class DatabaseTests(unittest.TestCase):
         with self.assertRaises(Problem) as ctx:service.save_event(self.conn,other,{**event,'transport':'car'})
         self.assertEqual(ctx.exception.status,403)
     def test_migrations_are_idempotent(self):
-        migrate(self.conn);migrate(self.conn);self.assertEqual(self.conn.execute('SELECT count(*) FROM schema_migrations').fetchone()[0],9)
+        migrate(self.conn);migrate(self.conn);self.assertEqual(self.conn.execute('SELECT count(*) FROM schema_migrations').fetchone()[0],10)
 
 class EmployeePhotoTests(unittest.TestCase):
     setUp=DatabaseTests.setUp

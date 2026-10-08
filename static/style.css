@@ -12,3 +12,5 @@
 .rotation.travel-day{background:#d7eafa;border:1px solid #95bfdf;color:#346a96;padding:0;justify-content:center;min-width:0}.travel-day .i{width:16px;height:16px}.drop-preview.outbound{background:#d7eafa;color:#346a96}[data-theme=dark] .rotation.travel-day{background:#294965;border-color:#527ea4;color:#b5dbff}
 
 .rotation .resize-handle{display:flex;align-items:center;justify-content:center;width:min(10px,30%);z-index:2;font-size:17px;font-weight:700;line-height:1;color:currentColor;opacity:.65;touch-action:none}.rotation .resize-handle:hover{opacity:1;background:#ffffff40}.rotation.dragging{cursor:grabbing;box-shadow:0 2px 8px #193b5440}.rotation.travel-day{cursor:pointer}
+
+.rotation.travel-day.ticket-pending{border:2px solid #d63e4d}.rotation.travel-day.ticket-bought{border:2px solid #27834b}.rotation.travel-day .i{flex-shrink:0}[data-theme=dark] .rotation.travel-day.ticket-pending{border-color:#ff7884}[data-theme=dark] .rotation.travel-day.ticket-bought{border-color:#66d493}

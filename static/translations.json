@@ -2393,5 +2393,30 @@
     "Atsiliepimo ištrynimas",
     "Usunięcie opinii",
     "Feedback deletion"
+  ],
+  "Транспорт не выбран": [
+    "Transportas nepasirinktas",
+    "Transport niewybrany",
+    "Transport not selected"
+  ],
+  "Статус билета": [
+    "Bilieto būsena",
+    "Status biletu",
+    "Ticket status"
+  ],
+  "Билет куплен": [
+    "Bilietas nupirktas",
+    "Bilet kupiony",
+    "Ticket purchased"
+  ],
+  "Билет не куплен": [
+    "Bilietas nenupirktas",
+    "Bilet niekupiony",
+    "Ticket not purchased"
+  ],
+  "Некорректный статус билета.": [
+    "Neteisinga bilieto būsena.",
+    "Nieprawidłowy status biletu.",
+    "Invalid ticket status."
   ]
 }

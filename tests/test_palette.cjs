@@ -15,7 +15,7 @@ context.position=position(-250+28*11);
  await vm.runInContext("addPaletteItem(position,'sick')",context);
  assert.equal(calls[0][0],'periods');assert.equal(calls[0][1].start,'2026-10-12');assert.equal(calls[0][1].end,'2026-10-12');assert.equal(calls[0][1].schedule_version,4);
  await vm.runInContext("addPaletteItem(position,'outbound')",context);
- assert.equal(calls[1][0],'events');assert.equal(Object.hasOwn(calls[1][1],'timezone'),false);assert.equal(calls[1][1].date,'2026-10-12');assert.equal(loads,2);
+ assert.equal(calls[1][1].transport,'unknown');assert.equal(calls[1][1].ticket_bought,0);assert.equal(calls[1][0],'events');assert.equal(Object.hasOwn(calls[1][1],'timezone'),false);assert.equal(calls[1][1].date,'2026-10-12');assert.equal(loads,2);
  context.paletteBusy=true;await vm.runInContext("addPaletteItem(position,'work')",context);assert.equal(calls.length,2);
  console.log('14 palette coordinate and save checks passed');
 })().catch(error=>{console.error(error);process.exitCode=1});

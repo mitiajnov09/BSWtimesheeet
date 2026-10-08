@@ -18,7 +18,7 @@ COLORS={'work':'#bde8c9','rest':'#e2e6ec','vacation':'#c6dcfa','sick':'#f9c7cb'}
 LABELS={'work':'Работа','rest':'Отдых','vacation':'Отпуск','sick':'Больничный'}
 CODES={'work':'Р','rest':'О','vacation':'У','sick':'Б'}
 EVENT_LABELS={'outbound':'Поездка на объект','return':'Обратная поездка','arrival':'Прибытие','departure':'Отъезд','note':'Примечание'}
-TRANSPORT_LABELS={'plane':'Самолёт','car':'Машина','ferry':'Паром'}
+TRANSPORT_LABELS={'unknown':'Транспорт не выбран','plane':'Самолёт','car':'Машина','ferry':'Паром'}
 MONTHS=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь']
 
 def export(conn,user,data):
@@ -127,7 +127,9 @@ def export(conn,user,data):
             for point in points[1:]:p.lineTo(*point)
             if close:p.close()
             c.drawPath(p,stroke=1,fill=0)
-        if transport=='car':
+        if transport=='unknown':
+            c.line(12,21,12,8);c.circle(12,3,1,stroke=1,fill=0)
+        elif transport=='car':
             line([(3,5),(21,5),(21,14),(19,14),(17,20),(7,20),(5,14),(3,14)],True)
             c.line(5,14,19,14);c.line(6,10,8,10);c.line(16,10,18,10);c.line(6,5,6,2);c.line(18,5,18,2)
         elif transport=='ferry':
@@ -208,8 +210,8 @@ def export(conn,user,data):
                 for lane,trip in enumerate(trips):
                     if not e['_layer_start']<=lane<e['_layer_end']:continue
                     lane_y=row_y+9+(e['_layer_end']-1-lane)*24
-                    c.setFillColor(HexColor('#d7eafa'));c.rect(x,lane_y,cell,22,fill=1,stroke=0)
-                    transport_icon(x+(cell-min(14,cell-2))/2,lane_y+4,trip.get('transport','plane'))
+                    c.setFillColor(HexColor('#d7eafa'));c.setStrokeColor(HexColor('#27834b' if trip.get('ticket_bought') else '#d63e4d'));c.setLineWidth(1.2);c.rect(x+.6,lane_y+.6,cell-1.2,20.8,fill=1,stroke=1)
+                    transport_icon(x+(cell-min(14,cell-2))/2,lane_y+4,trip.get('transport','unknown'))
                 if any(v['kind'] not in ('outbound','return') for v in ev):text(x+cell/2-3,row_y+2,extra['event'],6)
                 c.setStrokeColor(HexColor('#d5dce5'));c.setLineWidth(.3);c.line(x,row_y,x,row_y+row_height)
             c.setStrokeColor(HexColor('#d5dce5'));c.line(margin,row_y,width-margin,row_y)
@@ -226,7 +228,7 @@ def export(conn,user,data):
     for ev in events:
         if ev['employee_id'] not in allowed:continue
         e=allowed[ev['employee_id']]
-        details.append(e['last_name']+' '+e['first_name']+' · '+ev['date']+(' '+ev['time'] if ev['time'] else '')+' · '+event_labels[ev['kind']]+(' · '+tr(TRANSPORT_LABELS[ev.get('transport','plane')]) if ev['kind'] in ('outbound','return') else '')+' · '+ev['route']+' '+ev['flight']+(' · '+ev['notes'] if data.get('include_notes',True) and ev['notes'] else ''))
+        details.append(e['last_name']+' '+e['first_name']+' · '+ev['date']+(' '+ev['time'] if ev['time'] else '')+' · '+event_labels[ev['kind']]+(' · '+tr(TRANSPORT_LABELS[ev.get('transport','unknown')])+' · '+tr('Билет куплен' if ev.get('ticket_bought') else 'Билет не куплен') if ev['kind'] in ('outbound','return') else '')+' · '+ev['route']+' '+ev['flight']+(' · '+ev['notes'] if data.get('include_notes',True) and ev['notes'] else ''))
     if details:
         title(extra['details']+' · '+start.isoformat()+' — '+end.isoformat());y=height-83-title_extra
         for detail in details:
